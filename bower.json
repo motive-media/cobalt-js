@@ -1,0 +1,14 @@
+{
+  "name": "cobalt-js",
+  "version": "0.0.1",
+  "main": "cobalt.js",
+  "ignore": [
+    "test"
+  ],
+  "dependencies": {
+
+  },
+  "devDependencies": {
+
+  }
+}
