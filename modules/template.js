@@ -1,5 +1,6 @@
 var template_cache = {},
-    Template;
+    Template,
+    TemplateCreate;
 
 Template = function (template, data) {
     var content = template_cache[template];
