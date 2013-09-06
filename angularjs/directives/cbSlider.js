@@ -4,10 +4,11 @@
  * Cobalt Slider
  * - Generic Slider
  *
- * options
+ * <element cb-slider="options" cb-slider-data="collection"></element>
+ *
+ * options [Object]
  *   option name    : type     : default    : description
  *   =====================================================================================
- *   collection     : Array    : null       : The array of articles/items
  *   collectionName : String   : 'pages'    : Number of paged collection attached to scope
  *   perPage        : Number   : 1          : Number of article per page
  *   autoPlay       : Boolean  : false      : Auto progress the slider
@@ -15,11 +16,11 @@
  *   delay          : Number   : 5000       : Minimum time in ms between slides
  *   delayFlux      : Number   : 1000       : Maximum additional time in ms between slides
  *
- *
+ * collection [Array]
  *
  <example>
     <div ng-init='people = [{"name":"Arnold"},{"name":"Joshua"},{"name":"Cassiopeia"}]'
-         cb-slider='{collection: people, perPage: 2, collectionName: 'groups'}'>
+         cb-slider='{perPage: 2, collectionName: 'groups'}' cb-slider-data="people">
         <div ng-repeat="group in slider.groups">
             <span ng-repeat="person in group">{{ person.name }}</span>
         </div>
@@ -30,7 +31,7 @@
 angular.module('cb.directives').directive('cbSlider', function($timeout) {
     return {
         restrict: 'A',
-        scope: {},
+        scope: {collection: '=cbSliderData'},
         link: function(scope, element, attrs) {
             var lastPage, next, options, resetTimer, timer = null, slider, thePages;
 
@@ -50,24 +51,22 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
                 currentPage: options.currentPage
             };
 
-            lastPage = Math.ceil(options.collection.length / options.perPage) - 1;
+            scope.$watch('collection', function (newValue){
 
-            // Split collection into pages, if necessary
-            if (options.perPage === 1) {
-                thePages = options.collection
-            } else {
-                thePages = [];
-                for (var i = 0, j = -1, _length = options.collection.length; i < _length; i++) {
-                    if (i % options.perPage === 0) {
-                        j++;
-                        thePages.push([]);
+                lastPage = Math.ceil(newValue.length / options.perPage) - 1;
+
+                // Split collection into pages, if necessary
+                if (options.perPage === 1) {
+                    thePages = newValue
+                } else {
+                    thePages = [];
+                    for (var i = 0, _length = newValue.length; i < _length; i += options.perPage) {
+                        thePages.push(newValue.slice(i, i + options.perPage));
                     }
-
-                    thePages[j].push(options.collection[i]);
                 }
-            }
 
-            slider[options.collectionName] = thePages;
+                slider[options.collectionName] = thePages;
+            });
 
             next = function () {
                 var nextId = (slider.currentPage + 1) % (lastPage + 1);
