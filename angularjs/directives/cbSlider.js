@@ -9,7 +9,7 @@
  * options [Object]
  *   option name    : type     : default    : description
  *   =====================================================================================
- *   collectionName : String   : 'pages'    : Number of paged collection attached to scope
+ *   collectionName : String   : 'pages'    : Name of paged collection attached to scope
  *   perPage        : Number   : 1          : Number of article per page
  *   autoPlay       : Boolean  : false      : Auto progress the slider
  *   initialDelay   : Number   : 7000       : Time in ms before auto play starts
