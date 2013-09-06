@@ -20,7 +20,7 @@
  <example>
     <div ng-init='people = [{"name":"Arnold"},{"name":"Joshua"},{"name":"Cassiopeia"}]'
          cb-slider='{collection: people, perPage: 2, collectionName: 'groups'}'>
-        <div ng-repeat="group in groups">
+        <div ng-repeat="group in slider.groups">
             <span ng-repeat="person in group">{{ person.name }}</span>
         </div>
     </div>
@@ -67,12 +67,7 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
                 }
             }
 
-            // Use a custom name for the collection, if it exists
-            if (options.collectionName === null || options.collectionName === '') {
-                slider.pages = thePages
-            } else {
-                slider[options.collectionName] = thePages;
-            }
+            slider[options.collectionName] = thePages;
 
             next = function () {
                 var nextId = (slider.currentPage + 1) % (lastPage + 1);
