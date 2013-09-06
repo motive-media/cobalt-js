@@ -55,6 +55,8 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
 
                 lastPage = Math.ceil(newValue.length / options.perPage) - 1;
 
+                console.log(newValue);
+
                 // Split collection into pages, if necessary
                 if (options.perPage === 1) {
                     thePages = newValue
