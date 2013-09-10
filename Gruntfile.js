@@ -83,5 +83,5 @@ module.exports = function (grunt) {
 
     // Register tasks
     grunt.registerTask('default', ['build']);
-    grunt.registerTask('build', ['clean', 'copy', 'ngmin', 'uglify', 'clean']);
+    grunt.registerTask('build', ['clean', 'jshint', 'copy', 'ngmin', 'uglify', 'clean']);
 };
