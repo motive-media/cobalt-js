@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         // Setup the package details
-        pkg: grunt.file.readJSON('package.json'),
+        pkg: grunt.file.readJSON('bower.json'),
 
         // Clean up folders to remove any build or tmp files
         clean: {
@@ -70,7 +70,8 @@ module.exports = function (grunt) {
             },
             build: {
                 options: {
-                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+                    footer: ''
                 },
                 files: {
                     'cobalt.angular.js': ['build/cobalt.angular.js'],

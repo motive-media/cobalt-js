@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.1.1 - 2013-09-10 */
+/*! cobalt-js - v0.1.2 - 2013-09-10 */
 (function() {
     "use strict";
     angular.module("cb.directives", []);
@@ -80,5 +80,4 @@
             }
         };
     } ]);
-})();
 })();
