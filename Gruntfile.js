@@ -19,17 +19,40 @@ module.exports = function (grunt) {
         },
 
         ngmin: {
-            base_files: {
+            all: {
                 expand: true,
                 cwd: 'tmp',
-                src: ['*.js'],
+                src: ['**/*.js'],
                 dest: 'build'
+            }
+        },
+
+        uglify: {
+            concat: {
+                options: {
+                    preserveComments: 'all',
+                    compress: false,
+                    beautify: true
+                },
+                files: {
+                    'cobalt.angular.js': [
+                        'build/cbUtilities.js',
+                        'build/cbDirectives.js',
+                        'build/directives/**/*.js'
+                    ]
+                }
             },
-            directives: {
-                expand: true,
-                cwd: 'tmp',
-                src: ['directives/**/*.js'],
-                dest: 'build'
+            min: {
+                options: {
+                    preserveComments: false
+                },
+                files: {
+                    'cobalt.angular.min.js': [
+                        'build/cbUtilities.js',
+                        'build/cbDirectives.js',
+                        'build/directives/**/*.js'
+                    ]
+                }
             }
         }
     });
@@ -38,6 +61,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-ngmin');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
     // Register tasks
     grunt.registerTask('default', ['clean', 'copy', 'ngmin', 'clean:tmp']);
