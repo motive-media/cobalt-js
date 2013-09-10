@@ -40,5 +40,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-ngmin');
 
     // Register tasks
-    //grunt.registerTask('default', ['']);
+    grunt.registerTask('default', ['clean', 'copy', 'ngmin', 'clean:tmp']);
 };
