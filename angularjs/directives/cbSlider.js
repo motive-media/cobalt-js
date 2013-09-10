@@ -28,7 +28,7 @@
  </example>
  */
 
-angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
+angular.module('cb.directives').directive('cbSlider', function ($timeout) {
     return {
         restrict: 'A',
         scope: {collection: '=cbSliderData'},
