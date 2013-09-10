@@ -64,5 +64,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     // Register tasks
-    grunt.registerTask('default', ['clean', 'copy', 'ngmin', 'clean:tmp']);
+    grunt.registerTask('default', ['build']);
+    grunt.registerTask('build', ['clean', 'copy', 'ngmin', 'uglify', 'clean']);
 };
