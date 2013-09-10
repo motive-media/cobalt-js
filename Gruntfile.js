@@ -1,5 +1,8 @@
 module.exports = function (grunt) {
     grunt.initConfig({
+        // Setup the package details
+        pkg: grunt.file.readJSON('package.json'),
+
         // Clean up folders to remove any build or tmp files
         clean: {
             build: ['build/**/*'],
@@ -26,24 +29,20 @@ module.exports = function (grunt) {
                 expand: true,
                 cwd: 'tmp',
                 src: ['**/*.js'],
-                dest: 'build'
+                dest: 'tmp'
             }
         },
 
-        // Minify the source files and concat the files
+        // Minify the build files
         uglify: {
-            concat: {
+            dev: {
                 options: {
                     preserveComments: 'all',
                     compress: false,
                     beautify: true
                 },
                 files: {
-                    'cobalt.angular.js': [
-                        'build/cbUtilities.js',
-                        'build/cbDirectives.js',
-                        'build/directives/**/*.js'
-                    ]
+                    'build/cobalt.angular.js': ['build/cobalt.angular.js']
                 }
             },
             min: {
@@ -51,11 +50,31 @@ module.exports = function (grunt) {
                     preserveComments: false
                 },
                 files: {
-                    'cobalt.angular.min.js': [
-                        'build/cbUtilities.js',
-                        'build/cbDirectives.js',
-                        'build/directives/**/*.js'
+                    'build/cobalt.angular.min.js': ['build/cobalt.angular.js']
+                }
+            }
+        },
+
+        concat: {
+            options: {
+                banner: '(function () {\n"use strict";\n\n',
+                footer: '\n})();'
+            },
+            dev: {
+                files: {
+                    'build/cobalt.angular.js': [
+                        'tmp/*.js',
+                        'tmp/directives/**/*.js'
                     ]
+                }
+            },
+            build: {
+                options: {
+                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                },
+                files: {
+                    'cobalt.angular.js': ['build/cobalt.angular.js'],
+                    'cobalt.angular.min.js': ['build/cobalt.angular.min.js']
                 }
             }
         },
@@ -85,8 +104,18 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-ngmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-concat');
 
     // Register tasks
     grunt.registerTask('default', ['build']);
-    grunt.registerTask('build', ['clean', 'jshint', 'copy', 'ngmin', 'uglify', 'clean']);
+    grunt.registerTask('build', [
+        'clean',
+        'jshint',
+        'copy',
+        'ngmin',
+        'concat:dev',
+        'uglify',
+        'concat:build',
+        'clean'
+    ]);
 };
