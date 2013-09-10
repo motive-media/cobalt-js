@@ -1,10 +1,12 @@
 module.exports = function (grunt) {
     grunt.initConfig({
+        // Clean up folders to remove any build or tmp files
         clean: {
             build: ['build/**/*'],
             tmp: ['tmp/**/*']
         },
 
+        // Copy dev files to tmp folder
         copy: {
             tmp: {
                 files: [
@@ -18,6 +20,7 @@ module.exports = function (grunt) {
             }
         },
 
+        // Run through ngmin to prevent bad dependency injection
         ngmin: {
             all: {
                 expand: true,
@@ -27,6 +30,7 @@ module.exports = function (grunt) {
             }
         },
 
+        // Minify the source files and concat the files
         uglify: {
             concat: {
                 options: {
@@ -56,6 +60,7 @@ module.exports = function (grunt) {
             }
         },
 
+        // Run a linter through files to test for errors
         jshint: {
             options: {
                 curly: true,
