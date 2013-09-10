@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Cobalt Slider
  * - Generic Slider
@@ -29,6 +27,8 @@
  */
 
 angular.module('cb.directives').directive('cbSlider', function ($timeout) {
+    'use strict';
+
     return {
         restrict: 'A',
         scope: {collection: '=cbSliderData'},
@@ -51,7 +51,7 @@ angular.module('cb.directives').directive('cbSlider', function ($timeout) {
                 'delayFlux'     : 1000
             };
 
-            angular.extend(options, scope.$eval(attrs['cbSlider']));
+            angular.extend(options, scope.$eval(attrs.cbSlider));
 
             slider = scope.slider = {
                 currentPage: options.currentPage
@@ -62,7 +62,7 @@ angular.module('cb.directives').directive('cbSlider', function ($timeout) {
 
                 // Split collection into pages, if necessary
                 if (options.perPage === 1) {
-                    thePages = newValue
+                    thePages = newValue;
                 } else {
                     thePages = [];
 
@@ -83,7 +83,7 @@ angular.module('cb.directives').directive('cbSlider', function ($timeout) {
             };
 
             resetTimer = function () {
-                if (options.autoPlay && (timer != null)) {
+                if (options.autoPlay && (timer !== null)) {
                     $timeout.cancel(timer);
                     timer = $timeout(next, options.initialDelay);
                 }

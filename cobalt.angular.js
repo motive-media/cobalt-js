@@ -1,14 +1,9 @@
-"use strict";
-
 angular.module("cb.utilities", [ "cb.directives" ]);
-
-"use strict";
 
 angular.module("cb.directives", []);
 
-"use strict";
-
 angular.module("cb.directives").directive("cbSlider", [ "$timeout", function(a) {
+    "use strict";
     return {
         restrict: "A",
         scope: {
@@ -25,7 +20,7 @@ angular.module("cb.directives").directive("cbSlider", [ "$timeout", function(a) 
                 delay: 5e3,
                 delayFlux: 1e3
             };
-            angular.extend(g, b.$eval(d["cbSlider"]));
+            angular.extend(g, b.$eval(d.cbSlider));
             j = b.slider = {
                 currentPage: g.currentPage
             };
@@ -48,7 +43,7 @@ angular.module("cb.directives").directive("cbSlider", [ "$timeout", function(a) 
                 i = a(f, g.delay + Math.random() * g.delayFlux);
             };
             h = function() {
-                if (g.autoPlay && i != null) {
+                if (g.autoPlay && i !== null) {
                     a.cancel(i);
                     i = a(f, g.initialDelay);
                 }
