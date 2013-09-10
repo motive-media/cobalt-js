@@ -3,6 +3,19 @@ module.exports = function (grunt) {
         clean: {
             build: ['build/**/*'],
             tmp: ['tmp/**/*']
+        },
+
+        copy: {
+            tmp: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'angularjs/',
+                        src: ['**'],
+                        dest: 'tmp/'
+                    }
+                ]
+            }
         }
     });
 
