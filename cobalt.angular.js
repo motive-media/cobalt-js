@@ -8,7 +8,7 @@ angular.module("cb.directives", []);
 
 "use strict";
 
-angular.module("cbSlider", []).directive("cbSlider", [ "$timeout", function(a) {
+angular.module("cb.directives").directive("cbSlider", [ "$timeout", function(a) {
     return {
         restrict: "A",
         scope: {
