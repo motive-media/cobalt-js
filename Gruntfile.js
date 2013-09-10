@@ -54,6 +54,23 @@ module.exports = function (grunt) {
                     ]
                 }
             }
+        },
+
+        jshint: {
+            options: {
+                curly: true,
+                eqeqeq: true,
+                immed: true,
+                trailing: true,
+                strict: true,
+                forin: true,
+                loopfunc: true,
+                globals: {
+                    angular: true
+                },
+                ignores: ['angularjs/**/*.min.js']
+            },
+            files: ['angularjs/**/*.js']
         }
     });
 
@@ -62,6 +79,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-ngmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
 
     // Register tasks
     grunt.registerTask('default', ['build']);
