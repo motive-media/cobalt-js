@@ -4,4 +4,4 @@
  * Library of generic yet useful directives
  */
 
-angular.module('cb.directives', []);
+angular.module('cb.directives', ['cbSlider']);

@@ -26,7 +26,7 @@
  </example>
  */
 
-angular.module('cb.directives').directive('cbSlider', function ($timeout) {
+angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
     'use strict';
 
     return {
@@ -65,7 +65,7 @@ angular.module('cb.directives').directive('cbSlider', function ($timeout) {
 
                     // Split collection into pages, if necessary
                     if (options.perPage === 1) {
-                        thePages = newValue
+                        thePages = newValue;
                     } else {
                         thePages = [];
                         for (var i = 0, _length = newValue.length; i < _length; i += options.perPage) {
