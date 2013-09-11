@@ -66,7 +66,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function () {
                                 right: element.css('margin-right'),
                                 bottom: element.css('margin-bottom'),
                                 left: element.css('margin-left')
-                            };;
+                            };
 
                         eWidth += parseInt(ePadding.left.replace('px', ''), 10) + parseInt(ePadding.right.replace('px', ''), 10);
                         eHeight += parseInt(ePadding.top.replace('px', ''), 10) + parseInt(ePadding.bottom.replace('px', ''), 10);

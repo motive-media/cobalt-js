@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.1.3 - 2013-09-11 */
+/*! cobalt-js - v0.2.1 - 2013-09-11 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip" ]);
@@ -118,6 +118,21 @@
                         };
                         h = function() {
                             var a = $(".cb-tooltip"), c = b.offset(), d = b.width(), f = b.height(), g = a.width(), h = a.height(), i = 0, j = 0;
+                            var k = {
+                                top: b.css("padding-top"),
+                                right: b.css("padding-right"),
+                                bottom: b.css("padding-bottom"),
+                                left: b.css("padding-left")
+                            }, l = {
+                                top: b.css("margin-top"),
+                                right: b.css("margin-right"),
+                                bottom: b.css("margin-bottom"),
+                                left: b.css("margin-left")
+                            };
+                            d += parseInt(k.left.replace("px", ""), 10) + parseInt(k.right.replace("px", ""), 10);
+                            f += parseInt(k.top.replace("px", ""), 10) + parseInt(k.bottom.replace("px", ""), 10);
+                            d += parseInt(l.left.replace("px", ""), 10) + parseInt(l.right.replace("px", ""), 10);
+                            f += parseInt(l.top.replace("px", ""), 10) + parseInt(l.bottom.replace("px", ""), 10);
                             if ("top" === e.position) {
                                 i = c.top - h - e.space;
                             } else if ("bottom" === e.position) {
