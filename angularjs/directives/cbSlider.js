@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Cobalt Slider
  * - Generic Slider
@@ -28,12 +26,20 @@
  </example>
  */
 
-angular.module('cb.directives').directive('cbSlider', function($timeout) {
+angular.module('cb.directives').directive('cbSlider', function ($timeout) {
+    'use strict';
+
     return {
         restrict: 'A',
         scope: {collection: '=cbSliderData'},
-        link: function(scope, element, attrs) {
-            var lastPage, next, options, resetTimer, timer = null, slider, thePages;
+        link: function (scope, element, attrs) {
+            var lastPage,
+                next,
+                options,
+                resetTimer,
+                timer = null,
+                slider,
+                thePages;
 
             options = {
                 'currentPage'   : 0,
@@ -45,14 +51,14 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
                 'delayFlux'     : 1000
             };
 
-            angular.extend(options, scope.$eval(attrs['cbSlider']));
+            angular.extend(options, scope.$eval(attrs.cbSlider));
 
             slider = scope.slider = {
                 currentPage: options.currentPage
             };
 
             scope.$watch('collection', function (newValue){
-                if (newValue == null) {
+                if (newValue === null) {
                     slide[options.collectionName] = null;
                 } else {
                     lastPage = Math.ceil(newValue.length / options.perPage) - 1;
@@ -73,13 +79,14 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
 
             next = function () {
                 var nextId = (slider.currentPage + 1) % (lastPage + 1);
+
                 slider.left = true;
                 slider.currentPage = nextId;
                 timer = $timeout(next, options.delay + Math.random() * options.delayFlux);
             };
 
             resetTimer = function () {
-                if (options.autoPlay && (timer != null)) {
+                if (options.autoPlay && (timer !== null)) {
                     $timeout.cancel(timer);
                     timer = $timeout(next, options.initialDelay);
                 }
@@ -87,22 +94,25 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
 
             slider.next = function () {
                 resetTimer();
+
                 if (slider.currentPage < lastPage) {
                     slider.left = true;
                     slider.currentPage++;
                 }
             };
 
-            slider.prev = function() {
+            slider.prev = function () {
                 resetTimer();
+
                 if (slider.currentPage > 0) {
                     slider.left = false;
                     slider.currentPage--;
                 }
             };
 
-            slider.goto = function(index) {
+            slider.goto = function (index) {
                 resetTimer();
+
                 if (index >= 0 && index <= lastPage) {
                     if (slider.currentPage < index) {
                         slider.left = true;
