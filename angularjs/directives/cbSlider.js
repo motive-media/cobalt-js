@@ -52,20 +52,23 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
             };
 
             scope.$watch('collection', function (newValue){
-
-                lastPage = Math.ceil(newValue.length / options.perPage) - 1;
-
-                // Split collection into pages, if necessary
-                if (options.perPage === 1) {
-                    thePages = newValue
+                if (newValue == null) {
+                    slide[options.collectionName] = null;
                 } else {
-                    thePages = [];
-                    for (var i = 0, _length = newValue.length; i < _length; i += options.perPage) {
-                        thePages.push(newValue.slice(i, i + options.perPage));
-                    }
-                }
+                    lastPage = Math.ceil(newValue.length / options.perPage) - 1;
 
-                slider[options.collectionName] = thePages;
+                    // Split collection into pages, if necessary
+                    if (options.perPage === 1) {
+                        thePages = newValue
+                    } else {
+                        thePages = [];
+                        for (var i = 0, _length = newValue.length; i < _length; i += options.perPage) {
+                            thePages.push(newValue.slice(i, i + options.perPage));
+                        }
+                    }
+
+                    slider[options.collectionName] = thePages;
+                }
             });
 
             next = function () {
@@ -110,7 +113,7 @@ angular.module('cb.directives').directive('cbSlider', function($timeout) {
                 }
             };
 
-            if (options.autorotate === true) {
+            if (options.autoPlay === true) {
                 timer = $timeout(next, options.initialDelay);
             }
         }
