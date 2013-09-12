@@ -39,7 +39,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                     var options, tooltip, show, hide, setPosition, el, tooltipElem;
 
                     options = {
-                        tpl: '<div class="cb-tooltip" ng-style="style">' +
+                        tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' +
                              '<div class="arrow"></div>' +
                              '<header ng-if="title">{{title}}</header>' +
                              '<section>{{content}}</section>' +
@@ -55,6 +55,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                     tooltip.position = options.position;
                     tooltip.space = options.space;
                     tooltip.tpl = options.tpl;
+                    tooltip.show = false;
 
                     el = angular.element(tooltip.tpl);
                     tooltipElem = $compile( el )( scope );
@@ -65,40 +66,36 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                         angular.element(document.body).append(tooltipElem);
                         tooltipElem.addClass(tooltip.position);
 
-                        setPosition();
+                        tooltip.$apply(function () {
+                            tooltip.show = true;
+                        });
+
+                        setPosition(); setPosition();
                     };
 
                     hide = function () {
-                        tooltipElem.remove();
+                        tooltip.$apply(function () {
+                            tooltip.show = false;
+                            tooltipElem.remove();
+                        });
                     };
 
                     setPosition = function () {
-                        var box = tooltipElem,
-                            os = element.offset(),
-                            eWidth = element.width(),
-                            eHeight = element.height(),
-                            tWidth = box.width(),
-                            tHeight = box.height(),
+                        var os = element.offset(),
+                            eWidth = element.outerWidth(true) || element.width(),
+                            eHeight = element.outerHeight(true) || element.height(),
+                            tWidth = tooltipElem.outerWidth(true) || tooltipElem.width(),
+                            tHeight = tooltipElem.outerHeight(true) || tooltipElem.height(),
                             top = 0,
-                            left = 0,
-                            ePadding = {
-                                top: element.css('padding-top'),
-                                right: element.css('padding-right'),
-                                bottom: element.css('padding-bottom'),
-                                left: element.css('padding-left')
-                            },
-                            eMargin = {
-                                top: element.css('margin-top'),
-                                right: element.css('margin-right'),
-                                bottom: element.css('margin-bottom'),
-                                left: element.css('margin-left')
-                            };
+                            left = 0;
 
-                        eWidth += parseInt(ePadding.left.replace('px', ''), 10) + parseInt(ePadding.right.replace('px', ''), 10);
-                        eHeight += parseInt(ePadding.top.replace('px', ''), 10) + parseInt(ePadding.bottom.replace('px', ''), 10);
-
-                        eWidth += parseInt(eMargin.left.replace('px', ''), 10) + parseInt(eMargin.right.replace('px', ''), 10);
-                        eHeight += parseInt(eMargin.top.replace('px', ''), 10) + parseInt(eMargin.bottom.replace('px', ''), 10);
+                        console.log({
+                            os: os,
+                            eWidth: eWidth,
+                            eHeight: eHeight,
+                            tWidth: tWidth,
+                            tHeight: tHeight
+                        });
 
                         if ('top' === tooltip.position) {
                             top = os.top - tHeight - tooltip.space;
@@ -112,21 +109,21 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
 
                         if ('top' === tooltip.position || 'bottom' === tooltip.position) {
                             if (tWidth > eWidth) {
-                                left = os.left - ((tWidth - eWidth) / 2) - tooltip.space;
+                                left = os.left - ((tWidth - eWidth) / 2);
                             } else {
-                                left = os.left + ((eWidth - tWidth) / 2) + tooltip.space;
+                                left = os.left + ((eWidth - tWidth) / 2);
                             }
                         }
 
                         if ('left' === tooltip.position || 'right' === tooltip.position) {
                             if (tHeight > eHeight) {
-                                top = os.top - (tHeight - eHeight) / 2 - tooltip.space;
+                                top = os.top - (tHeight - eHeight) / 2;
                             } else {
-                                top = os.top + (eHeight - tHeight) / 2 + tooltip.space;
+                                top = os.top + (eHeight - tHeight) / 2;
                             }
                         }
 
-                        tooltip.$apply(function(){
+                        tooltip.$apply(function () {
                             tooltip.style = {
                                 top: top,
                                 left: left,

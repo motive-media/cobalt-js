@@ -15,9 +15,10 @@
         }
 
         .cb-tooltip {
-            display: block;;
+            display: block;
             font-size: 12px !important;
             font-weight: 100;
+            z-index: 999999999;
         }
 
         article {
@@ -45,7 +46,7 @@
 <body ng-app="DemoApp">
     <article>
         <h2>Top</h2>
-        <p><span href="#" cb-tooltip="{'position': 'left', 'space': 12}" data-content="Hello world">Tooltip Demo</span></p>
+        <p><span cb-tooltip="{'position': 'top', 'space': 12}" data-content="Hello world">Tooltip Demo</span></p>
     </article>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
