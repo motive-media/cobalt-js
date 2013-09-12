@@ -2,7 +2,7 @@
  * Cobalt Tooltip
  * - Generic Tooltip
  *
- * <element cb-tooltip="options"></element>
+ * <element cb-tooltip="options" data-title="title" data-content="content"></element>
  *
  * options [Object]
  *   option name    : type     : default    : description
@@ -13,11 +13,14 @@
  *   space         : Number   : 8               : space between tooltip and element in pixels
  *   position      : String   : 'top'           : position of tooltip
  *
+ * title [String]
+ *
+ * content [String]
  *
  <example>
     <article>
         <h2>Top</h2>
-        <p><span href="#" cb-tooltip="{'position': 'top', 'content': 'Hello World'}" >Tooltip Demo</span></p>
+        <p><span href="#" cb-tooltip="{'position': 'top'}" title="Hello world" content="Lorem ipsum, son">Tooltip Demo</span></p>
     </article>
  </example>
  */
@@ -27,18 +30,15 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
     return {
         restrict: 'A',
         scope: {
-            'tpl': '@tpl',
-            'position': '@position',
             'title': '@title',
-            'content': '@content',
-            'space': '@space'
+            'content': '@content'
         },
         compile: function (scope, element, attrs) {
             return {
                 post: function (scope, element, attrs) {
-                    var defaults, tooltip, show, hide, setPosition, el, tooltipElem;
+                    var options, tooltip, show, hide, setPosition, el, tooltipElem;
 
-                    defaults = {
+                    options = {
                         tpl: '<div class="cb-tooltip" ng-style="style">' +
                              '<div class="arrow"></div>' +
                              '<header ng-if="title">{{title}}</header>' +
@@ -51,34 +51,18 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                     // Add alias for scope
                     tooltip = scope;
 
-                    // Revert to defaults when value is not defined
-                    scope.$watch('position', function (newValue) {
-                        if(!angular.isDefined(newValue)) {
-                            tooltip.position = defaults.position;
-                        }
-                    });
+                    angular.extend(options, scope.$eval(attrs.cbTooltip));
+                    tooltip.position = options.position;
+                    tooltip.space = options.space;
+                    tooltip.tpl = options.tpl;
 
-                    scope.$watch('space', function (newValue) {
-                        if(!angular.isDefined(newValue)) {
-                            tooltip.space = defaults.space;
-                        }
-                    });
-
-                    scope.$watch('tpl', function (newValue) {
-                        if (!angular.isDefined(newValue)) {
-                            newValue = defaults.tpl;
-                        }
-
-                        el = angular.element(newValue);
-
-                        tooltipElem = $compile( el )( scope );
-                    });
+                    el = angular.element(tooltip.tpl);
+                    tooltipElem = $compile( el )( scope );
 
                     element.addClass('cb-tooltip-active');
 
                     show = function () {
-                        angular.element('body').append(tooltipElem);
-
+                        angular.element(document.body).append(tooltipElem);
                         tooltipElem.addClass(tooltip.position);
 
                         setPosition();
@@ -142,13 +126,13 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                             }
                         }
 
-                        tooltip.style = {
-                            top: top,
-                            left: left,
-                            position: 'absolute'
-                        };
-
-                        tooltip.$apply();
+                        tooltip.$apply(function(){
+                            tooltip.style = {
+                                top: top,
+                                left: left,
+                                position: 'absolute'
+                            };
+                        });
                     };
 
                     element.on('mouseenter', show);
