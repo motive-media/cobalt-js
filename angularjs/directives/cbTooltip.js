@@ -1,61 +1,80 @@
-angular.module('cbTooltip', []).directive('cbTooltip', function () {
+angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
     'use strict';
 
     return {
         restrict: 'A',
-        scope: true,
+        scope: {
+            'tpl': '@tpl',
+            'position': '@position',
+            'title': '@title',
+            'content': '@content',
+            'space': '@space'
+        },
         compile: function (scope, element, attrs) {
             return {
                 post: function (scope, element, attrs) {
-                    var defaultTpl, tooltip, show, hide, setPosition;
+                    var defaults, tooltip, show, hide, setPosition, el, tooltipElem;
 
-                    defaultTpl = '<div class="cb-tooltip">' +
-                        '<div class="arrow"></div>' +
-                        '{{header}}' +
-                        '<section>{{content}}</section>' +
-                        '</div>';
-
-                    tooltip = scope.tooltip = {
-                        tpl: attrs.tpl || defaultTpl,
-                        position: attrs.position || 'top',
-                        title: attrs.title,
-                        content: attrs.content,
-                        space: attrs.space || 8
+                    defaults = {
+                        tpl: '<div class="cb-tooltip" ng-style="style">' +
+                             '<div class="arrow"></div>' +
+                             '<header ng-if="title">{{title}}</header>' +
+                             '<section>{{content}}</section>' +
+                             '</div>',
+                        position: 'top',
+                        space: 8
                     };
+
+                    // Add alias for scope
+                    tooltip = scope;
+
+                    // Revert to defaults when value is not defined
+                    scope.$watch('position', function (newValue) {
+                        if(!angular.isDefined(newValue)) {
+                            tooltip.position = defaults.position;
+                        }
+                    });
+
+                    scope.$watch('space', function (newValue) {
+                        if(!angular.isDefined(newValue)) {
+                            tooltip.space = defaults.space;
+                        }
+                    });
+
+                    scope.$watch('tpl', function (newValue) {
+                        if (!angular.isDefined(newValue)) {
+                            newValue = defaults.tpl;
+                        }
+
+                        el = angular.element(newValue);
+
+                        tooltipElem = $compile( el )( scope );
+                    });
 
                     element.addClass('cb-tooltip-active');
 
                     show = function () {
-                        var html = tooltip.tpl.replace(/\{\{content\}\}/gi, tooltip.content);
+                        angular.element('body').append(tooltipElem);
 
-                        if (tooltip.title) {
-                            html = html.replace(/\{\{header\}\}/gi, '<header>' + tooltip.title + '</header>');
-                        } else {
-                            html = html.replace(/\{\{header\}\}/gi, '');
-                        }
-
-                        $('body').append(html);
-
-                        $('.cb-tooltip').addClass(tooltip.position);
+                        tooltipElem.addClass(tooltip.position);
 
                         setPosition();
                     };
 
                     hide = function () {
-                        $('.cb-tooltip').remove();
+                        tooltipElem.remove();
                     };
 
                     setPosition = function () {
-                        var box = $('.cb-tooltip'),
+                        var box = tooltipElem,
                             os = element.offset(),
                             eWidth = element.width(),
                             eHeight = element.height(),
                             tWidth = box.width(),
                             tHeight = box.height(),
                             top = 0,
-                            left = 0;
-
-                        var ePadding = {
+                            left = 0,
+                            ePadding = {
                                 top: element.css('padding-top'),
                                 right: element.css('padding-right'),
                                 bottom: element.css('padding-bottom'),
@@ -100,11 +119,13 @@ angular.module('cbTooltip', []).directive('cbTooltip', function () {
                             }
                         }
 
-                        box.css({
+                        tooltip.style = {
                             top: top,
                             left: left,
                             position: 'absolute'
-                        });
+                        };
+
+                        tooltip.$apply();
                     };
 
                     element.on('mouseenter', show);
