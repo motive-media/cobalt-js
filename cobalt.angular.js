@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.2.1 - 2013-09-11 */
+/*! cobalt-js - v0.2.3 - 2013-09-12 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip" ]);
@@ -84,89 +84,93 @@
             }
         };
     } ]);
-    angular.module("cbTooltip", []).directive("cbTooltip", function() {
+    angular.module("cbTooltip", []).directive("cbTooltip", [ "$compile", function(a) {
         "use strict";
         return {
             restrict: "A",
-            scope: true,
-            compile: function(a, b, c) {
+            scope: {
+                title: "@title",
+                content: "@content"
+            },
+            compile: function(b, c, d) {
                 return {
-                    post: function(a, b, c) {
-                        var d, e, f, g, h;
-                        d = '<div class="cb-tooltip">' + '<div class="arrow"></div>' + "{{header}}" + "<section>{{content}}</section>" + "</div>";
-                        e = a.tooltip = {
-                            tpl: c.tpl || d,
-                            position: c.position || "top",
-                            title: c.title,
-                            content: c.content,
-                            space: c.space || 8
+                    post: function(b, c, d) {
+                        var e, f, g, h, i, j, k, l, m;
+                        e = {
+                            tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' + '<header ng-if="title">{{title}}</header>' + "<section>{{content}}</section>" + "</div>",
+                            tplArrow: '<div class="arrow" ng-style="arrowStyle"></div>',
+                            position: "top",
+                            space: 8,
+                            content: ":)"
                         };
-                        b.addClass("cb-tooltip-active");
-                        f = function() {
-                            var a = e.tpl.replace(/\{\{content\}\}/gi, e.content);
-                            if (e.title) {
-                                a = a.replace(/\{\{header\}\}/gi, "<header>" + e.title + "</header>");
-                            } else {
-                                a = a.replace(/\{\{header\}\}/gi, "");
-                            }
-                            $("body").append(a);
-                            $(".cb-tooltip").addClass(e.position);
-                            h();
-                        };
+                        f = b;
+                        angular.extend(e, b.$eval(d.cbTooltip));
+                        f.position = e.position;
+                        f.space = e.space;
+                        f.tpl = e.tpl;
+                        f.show = false;
+                        f.tplArrow = e.tplArrow;
+                        j = angular.element(f.tpl);
+                        k = angular.element(f.tplArrow);
+                        l = a(j)(b);
+                        m = a(k)(b);
+                        c.addClass("cb-tooltip-active");
+                        l.append(m);
+                        angular.element(document.body).append(l);
+                        l.addClass(f.position);
                         g = function() {
-                            $(".cb-tooltip").remove();
+                            f.$apply(function() {
+                                f.show = true;
+                            });
+                            i();
                         };
                         h = function() {
-                            var a = $(".cb-tooltip"), c = b.offset(), d = b.width(), f = b.height(), g = a.width(), h = a.height(), i = 0, j = 0;
-                            var k = {
-                                top: b.css("padding-top"),
-                                right: b.css("padding-right"),
-                                bottom: b.css("padding-bottom"),
-                                left: b.css("padding-left")
-                            }, l = {
-                                top: b.css("margin-top"),
-                                right: b.css("margin-right"),
-                                bottom: b.css("margin-bottom"),
-                                left: b.css("margin-left")
-                            };
-                            d += parseInt(k.left.replace("px", ""), 10) + parseInt(k.right.replace("px", ""), 10);
-                            f += parseInt(k.top.replace("px", ""), 10) + parseInt(k.bottom.replace("px", ""), 10);
-                            d += parseInt(l.left.replace("px", ""), 10) + parseInt(l.right.replace("px", ""), 10);
-                            f += parseInt(l.top.replace("px", ""), 10) + parseInt(l.bottom.replace("px", ""), 10);
-                            if ("top" === e.position) {
-                                i = c.top - h - e.space;
-                            } else if ("bottom" === e.position) {
-                                i = c.top + f + e.space;
-                            } else if ("left" === e.position) {
-                                j = c.left - g - e.space;
-                            } else if ("right" === e.position) {
-                                j = c.left + d + e.space;
-                            }
-                            if ("top" === e.position || "bottom" === e.position) {
-                                if (g > d) {
-                                    j = c.left - (g - d) / 2 - e.space;
-                                } else {
-                                    j = c.left + (d - g) / 2 + e.space;
-                                }
-                            }
-                            if ("left" === e.position || "right" === e.position) {
-                                if (h > f) {
-                                    i = c.top - (h - f) / 2 - e.space;
-                                } else {
-                                    i = c.top + (f - h) / 2 + e.space;
-                                }
-                            }
-                            a.css({
-                                top: i,
-                                left: j,
-                                position: "absolute"
+                            f.$apply(function() {
+                                f.show = false;
                             });
                         };
-                        b.on("mouseenter", f);
-                        b.on("mouseleave", g);
+                        i = function() {
+                            var a = c.offset(), b = c.outerWidth(true), d = c.outerHeight(true), e = l.outerWidth(true), g = l.outerHeight(true), h = m.outerWidth(true), i = m.outerHeight(true), j = 0, k = 0, n = {};
+                            if ("top" === f.position) {
+                                j = a.top - g - f.space;
+                                n.left = e / 2 - h / 2;
+                            } else if ("bottom" === f.position) {
+                                j = a.top + d + f.space;
+                                n.left = e / 2 - h / 2;
+                            } else if ("left" === f.position) {
+                                k = a.left - e - f.space;
+                                n.top = g / 2 - i / 2;
+                            } else if ("right" === f.position) {
+                                k = a.left + b + f.space;
+                                n.top = g / 2 - i / 2;
+                            }
+                            if ("top" === f.position || "bottom" === f.position) {
+                                if (e > b) {
+                                    k = a.left - (e - b) / 2;
+                                } else {
+                                    k = a.left + (b - e) / 2;
+                                }
+                            }
+                            if ("left" === f.position || "right" === f.position) {
+                                if (g > d) {
+                                    j = a.top - (g - d) / 2;
+                                } else {
+                                    j = a.top + (d - g) / 2;
+                                }
+                            }
+                            f.$apply(function() {
+                                f.style = {
+                                    top: j,
+                                    left: k
+                                };
+                                f.arrowStyle = n;
+                            });
+                        };
+                        c.on("mouseenter", g);
+                        c.on("mouseleave", h);
                     }
                 };
             }
         };
-    });
+    } ]);
 })();

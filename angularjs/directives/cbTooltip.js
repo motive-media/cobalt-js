@@ -8,8 +8,6 @@
  *   option name    : type     : default    : description
  *   =====================================================================================
  *   tpl           : String   : 'html...'       : html template for tooltip
- *   title         : String   : 'text...'       : title
- *   content       : String   : 'text/html'     : content
  *   space         : Number   : 8               : space between tooltip and element in pixels
  *   position      : String   : 'top'           : position of tooltip
  *
@@ -36,16 +34,17 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
         compile: function (scope, element, attrs) {
             return {
                 post: function (scope, element, attrs) {
-                    var options, tooltip, show, hide, setPosition, el, tooltipElem;
+                    var options, tooltip, show, hide, setPosition, el, elArrow, tooltipElem, tooltipArrow;
 
                     options = {
                         tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' +
-                             '<div class="arrow"></div>' +
                              '<header ng-if="title">{{title}}</header>' +
                              '<section>{{content}}</section>' +
                              '</div>',
+                        tplArrow: '<div class="arrow" ng-style="arrowStyle"></div>',
                         position: 'top',
-                        space: 8
+                        space: 8,
+                        content: ':)'
                     };
 
                     // Add alias for scope
@@ -56,12 +55,17 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                     tooltip.space = options.space;
                     tooltip.tpl = options.tpl;
                     tooltip.show = false;
+                    tooltip.tplArrow = options.tplArrow;
 
                     el = angular.element(tooltip.tpl);
-                    tooltipElem = $compile( el )( scope );
+                    elArrow = angular.element(tooltip.tplArrow);
+
+                    tooltipElem = $compile(el)(scope);
+                    tooltipArrow = $compile(elArrow)(scope);
 
                     element.addClass('cb-tooltip-active');
 
+                    tooltipElem.append(tooltipArrow);
                     angular.element(document.body).append(tooltipElem);
                     tooltipElem.addClass(tooltip.position);
 
@@ -81,31 +85,32 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
 
                     setPosition = function () {
                         var os = element.offset(),
-                            eWidth = element.outerWidth(true) || element.width(),
-                            eHeight = element.outerHeight(true) || element.height(),
-                            tWidth = tooltipElem.outerWidth(true) || tooltipElem.width(),
-                            tHeight = tooltipElem.outerHeight(true) || tooltipElem.height(),
+                            eWidth = element.outerWidth(true),
+                            eHeight = element.outerHeight(true),
+                            tWidth = tooltipElem.outerWidth(true),
+                            tHeight = tooltipElem.outerHeight(true),
+                            arrowWidth = tooltipArrow.outerWidth(true),
+                            arrowHeight = tooltipArrow.outerHeight(true),
                             top = 0,
-                            left = 0;
+                            left = 0,
+                            arrowStyle = {};
 
-                        console.log({
-                            os: os,
-                            eWidth: eWidth,
-                            eHeight: eHeight,
-                            tWidth: tWidth,
-                            tHeight: tHeight
-                        });
-
+                        // set up css for individual positions
                         if ('top' === tooltip.position) {
                             top = os.top - tHeight - tooltip.space;
+                            arrowStyle.left = (tWidth / 2) - (arrowWidth / 2);
                         } else if ('bottom' === tooltip.position) {
                             top = os.top + eHeight + tooltip.space;
+                            arrowStyle.left = (tWidth / 2) - (arrowWidth / 2);
                         } else if ('left' === tooltip.position) {
                             left = os.left - tWidth - tooltip.space;
+                            arrowStyle.top = (tHeight / 2) - (arrowHeight / 2);
                         } else if ('right' === tooltip.position) {
                             left = os.left + eWidth + tooltip.space;
+                            arrowStyle.top = (tHeight / 2) - (arrowHeight / 2);
                         }
 
+                        // set up left css for top and bottom position
                         if ('top' === tooltip.position || 'bottom' === tooltip.position) {
                             if (tWidth > eWidth) {
                                 left = os.left - ((tWidth - eWidth) / 2);
@@ -114,6 +119,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                             }
                         }
 
+                        // set up top css for left and right  position
                         if ('left' === tooltip.position || 'right' === tooltip.position) {
                             if (tHeight > eHeight) {
                                 top = os.top - (tHeight - eHeight) / 2;
@@ -125,9 +131,10 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                         tooltip.$apply(function () {
                             tooltip.style = {
                                 top: top,
-                                left: left,
-                                position: 'absolute'
+                                left: left
                             };
+
+                            tooltip.arrowStyle = arrowStyle;
                         });
                     };
 
