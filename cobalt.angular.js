@@ -1,8 +1,36 @@
-/*! cobalt-js - v0.2.3 - 2013-09-12 */
+/*! cobalt-js - v0.3.0 - 2013-09-16 */
 (function() {
     "use strict";
-    angular.module("cb.directives", [ "cbSlider", "cbTooltip" ]);
+    angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect" ]);
     angular.module("cb.utilities", [ "cb.directives" ]);
+    angular.module("cbSelect", []).directive("cbSelect", function() {
+        "use strict";
+        return {
+            restrict: "A",
+            scope: {
+                options: "="
+            },
+            template: '<div class="cb-select">' + '<div class="cb-select-value" ng-click="toggle()"><span>{{ selectedItem.label || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' + "</div>" + "<select>" + '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>",
+            replace: true,
+            require: "?ngModel",
+            link: function(a, b, c, d) {
+                a.show = false;
+                a.placeholder = c.placeholder || "Select a value";
+                d.$render = function() {
+                    a.selectedItem = d.$viewValue;
+                };
+                a.select = function(b) {
+                    a.selectedItem = b;
+                    a.show = false;
+                    d.$setViewValue(b);
+                    console.log(b, a.selectedValue, d.$viewValue);
+                };
+                a.toggle = function() {
+                    a.show = !a.show;
+                };
+            }
+        };
+    });
     angular.module("cbSlider", []).directive("cbSlider", [ "$timeout", function(a) {
         "use strict";
         return {
@@ -92,7 +120,7 @@
                 title: "@title",
                 content: "@content"
             },
-            compile: function(b, c, d) {
+            compile: function(b, c) {
                 return {
                     post: function(b, c, d) {
                         var e, f, g, h, i, j, k, l, m;
@@ -116,8 +144,8 @@
                         m = a(k)(b);
                         c.addClass("cb-tooltip-active");
                         l.append(m);
-                        angular.element(document.body).append(l);
                         l.addClass(f.position);
+                        angular.element(document.body).append(l);
                         g = function() {
                             f.$apply(function() {
                                 f.show = true;

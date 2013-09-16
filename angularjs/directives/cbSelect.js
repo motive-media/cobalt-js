@@ -39,7 +39,7 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
 
             scope.toggle = function () {
                 scope.show = !scope.show;
-            }
+            };
         }
-    }
+    };
 });
