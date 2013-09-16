@@ -66,8 +66,9 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                     element.addClass('cb-tooltip-active');
 
                     tooltipElem.append(tooltipArrow);
-                    angular.element(document.body).append(tooltipElem);
                     tooltipElem.addClass(tooltip.position);
+                    angular.element(document.body).append(tooltipElem);
+
 
                     show = function () {
                         tooltip.$apply(function () {
