@@ -14,17 +14,29 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
         template: '<div class="cb-select">' +
             '<div class="cb-select-value" ng-click="toggle()"><span>{{ selectedItem.label || placeholder }}</span><i></i></div>' +
             '<div class="cb-select-options" ng-show="show">' +
-            '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' +
+            '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option[labelKey] }}</div>' +
             '</div>' +
             '<select>' +
-            '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' +
+            '<option ng-repeat="o in options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == selectedItem[valueKey]">{{ o[labelKey] }}</option>' +
             '</select>' +
             '</div>',
         replace: true,
         require: '?ngModel',
         link: function (scope, element, attrs, ngModel) {
+            var options;
+
+            options = {
+                placeholder: 'Select a value',
+                labelKey: 'label',
+                valueKey: 'value'
+            };
+
+            angular.extend(options, scope.$eval(attrs.cbSelect));
+            scope.valueKey = options.valueKey;
+            scope.labelKey = options.labelKey;
+            scope.placeholder = options.placeholder;
+
             scope.show = false;
-            scope.placeholder = attrs.placeholder || 'Select a value';
 
             ngModel.$render = function () {
                 scope.selectedItem = ngModel.$viewValue;
@@ -34,7 +46,6 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
                 scope.selectedItem = item;
                 scope.show = false;
                 ngModel.$setViewValue(item);
-                console.log(item, scope.selectedValue, ngModel.$viewValue);
             };
 
             scope.toggle = function () {

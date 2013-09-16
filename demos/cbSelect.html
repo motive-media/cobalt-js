@@ -19,7 +19,7 @@
 <body ng-app="DemoApp">
     <article ng-init="theOptions = [{value: 'id', label: 'Idaho'},{value: 'ca', label: 'California'}];">
         <h2>cbSelect</h2>
-        <div cb-select options="theOptions" ng-model="state" placeholder="State"></div>
+        <div cb-select="{placeholder: 'State'}" options="theOptions" ng-model="state"></div>
     </article>
 
 
