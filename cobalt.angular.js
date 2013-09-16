@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.3.0 - 2013-09-16 */
+/*! cobalt-js - v0.3.1 - 2013-09-16 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect" ]);
@@ -10,12 +10,21 @@
             scope: {
                 options: "="
             },
-            template: '<div class="cb-select">' + '<div class="cb-select-value" ng-click="toggle()"><span>{{ selectedItem.label || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' + "</div>" + "<select>" + '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>",
+            template: '<div class="cb-select">' + '<div class="cb-select-value" ng-click="toggle()"><span>{{ selectedItem.label || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + "<select>" + '<option ng-repeat="o in options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div>",
             replace: true,
             require: "?ngModel",
             link: function(a, b, c, d) {
+                var e;
+                e = {
+                    placeholder: "Select a value",
+                    labelKey: "label",
+                    valueKey: "value"
+                };
+                angular.extend(e, a.$eval(c.cbSelect));
+                a.valueKey = e.valueKey;
+                a.labelKey = e.labelKey;
+                a.placeholder = e.placeholder;
                 a.show = false;
-                a.placeholder = c.placeholder || "Select a value";
                 d.$render = function() {
                     a.selectedItem = d.$viewValue;
                 };
@@ -23,7 +32,6 @@
                     a.selectedItem = b;
                     a.show = false;
                     d.$setViewValue(b);
-                    console.log(b, a.selectedValue, d.$viewValue);
                 };
                 a.toggle = function() {
                     a.show = !a.show;
