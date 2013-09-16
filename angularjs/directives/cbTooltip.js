@@ -31,7 +31,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
             'title': '@title',
             'content': '@content'
         },
-        compile: function (scope, element, attrs) {
+        compile: function (tElement, tAttrs) {
             return {
                 post: function (scope, element, attrs) {
                     var options, tooltip, show, hide, setPosition, el, elArrow, tooltipElem, tooltipArrow;
