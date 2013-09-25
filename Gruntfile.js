@@ -1,4 +1,9 @@
+'use strict';
+
 module.exports = function (grunt) {
+    // Load all grunt tasks
+    require('matchdep').filter('grunt-*').forEach(grunt.loadNpmTasks);
+
     grunt.initConfig({
         // Setup the package details
         pkg: grunt.file.readJSON('bower.json'),
@@ -98,14 +103,6 @@ module.exports = function (grunt) {
             files: ['angularjs/**/*.js']
         }
     });
-
-    // Load tasks
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-ngmin');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-concat');
 
     // Register tasks
     grunt.registerTask('default', ['build']);
