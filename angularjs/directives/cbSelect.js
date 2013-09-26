@@ -56,7 +56,7 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
                 scope.$apply(function(){
                     scope.show = false;
                 });
-            })
+            });
         }
     };
 });

@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.3.1 - 2013-09-16 */
+/*! cobalt-js - v0.3.3 - 2013-09-25 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect" ]);
@@ -10,7 +10,7 @@
             scope: {
                 options: "="
             },
-            template: '<div class="cb-select">' + '<div class="cb-select-value" ng-click="toggle()"><span>{{ selectedItem.label || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + "<select>" + '<option ng-repeat="o in options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div>",
+            template: '<div class="cb-select" tabindex="-1">' + '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}"><span>{{ selectedItem[labelKey] || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + "<select>" + '<option ng-repeat="o in options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div>",
             replace: true,
             require: "?ngModel",
             link: function(a, b, c, d) {
@@ -36,6 +36,11 @@
                 a.toggle = function() {
                     a.show = !a.show;
                 };
+                b.on("focusout", function() {
+                    a.$apply(function() {
+                        a.show = false;
+                    });
+                });
             }
         };
     });
