@@ -1,7 +1,7 @@
-/*! cobalt-js - v0.3.3 - 2013-09-25 */
+/*! cobalt-js - v0.3.4 - 2013-09-26 */
 (function() {
     "use strict";
-    angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect" ]);
+    angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
     angular.module("cb.utilities", [ "cb.directives" ]);
     angular.module("cbSelect", []).directive("cbSelect", function() {
         "use strict";
@@ -25,13 +25,17 @@
                 a.labelKey = e.labelKey;
                 a.placeholder = e.placeholder;
                 a.show = false;
-                d.$render = function() {
-                    a.selectedItem = d.$viewValue;
-                };
+                if (d) {
+                    d.$render = function() {
+                        a.selectedItem = d.$viewValue;
+                    };
+                }
                 a.select = function(b) {
                     a.selectedItem = b;
                     a.show = false;
-                    d.$setViewValue(b);
+                    if (d) {
+                        d.$setViewValue(b);
+                    }
                 };
                 a.toggle = function() {
                     a.show = !a.show;
@@ -44,6 +48,53 @@
             }
         };
     });
+    angular.module("cbSelectReplace", []).directive("cbSelectReplace", [ "$compile", function(a) {
+        "use strict";
+        return {
+            restrict: "CA",
+            scope: true,
+            require: "?ngModel",
+            compile: function(a, b) {
+                var c, d = [];
+                c = '<div class="cb-select" tabindex="-1">' + '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}"><span>{{ selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
+                angular.forEach(a.children(), function(a) {
+                    a = angular.element(a);
+                    d.push({
+                        label: a.text(),
+                        value: a.val()
+                    });
+                });
+                a.replaceWith(angular.element(c));
+                return {
+                    post: function(a, b, c, e) {
+                        a.show = false;
+                        if (e) {
+                            e.$render = function() {
+                                a.selectedItem = e.$viewValue;
+                            };
+                        }
+                        a.options = d;
+                        a.selectedItem = d[0];
+                        a.select = function(b) {
+                            a.selectedItem = b;
+                            a.show = false;
+                            if (e) {
+                                e.$setViewValue(b);
+                            }
+                        };
+                        a.toggle = function() {
+                            a.show = !a.show;
+                        };
+                        b.on("focusout", function() {
+                            a.$apply(function() {
+                                a.show = false;
+                            });
+                        });
+                    }
+                };
+            }
+        };
+    } ]);
     angular.module("cbSlider", []).directive("cbSlider", [ "$timeout", function(a) {
         "use strict";
         return {
@@ -159,13 +210,13 @@
                         l.append(m);
                         l.addClass(f.position);
                         angular.element(document.body).append(l);
-                        g = function() {
+                        g = f.show = function() {
                             f.$apply(function() {
                                 f.show = true;
                             });
                             i();
                         };
-                        h = function() {
+                        h = f.hide = function() {
                             f.$apply(function() {
                                 f.show = false;
                             });

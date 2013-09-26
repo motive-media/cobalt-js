@@ -4,7 +4,7 @@
  */
 
 angular.module('cbSelect', []).directive('cbSelect', function (){
-   'use strict';
+    'use strict';
 
     return {
         restrict: 'A',
@@ -38,14 +38,19 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
 
             scope.show = false;
 
-            ngModel.$render = function () {
-                scope.selectedItem = ngModel.$viewValue;
-            };
+            if (ngModel) {
+                ngModel.$render = function () {
+                    scope.selectedItem = ngModel.$viewValue;
+                };
+            }
 
             scope.select = function (item) {
                 scope.selectedItem = item;
                 scope.show = false;
-                ngModel.$setViewValue(item);
+
+                if (ngModel) {
+                    ngModel.$setViewValue(item);
+                }
             };
 
             scope.toggle = function () {
