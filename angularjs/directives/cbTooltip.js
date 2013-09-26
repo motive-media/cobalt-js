@@ -16,10 +16,10 @@
  * content [String]
  *
  <example>
-    <article>
-        <h2>Top</h2>
-        <p><span href="#" cb-tooltip="{'position': 'top'}" title="Hello world" content="Lorem ipsum, son">Tooltip Demo</span></p>
-    </article>
+ <article>
+ <h2>Top</h2>
+ <p><span href="#" cb-tooltip="{'position': 'top'}" title="Hello world" content="Lorem ipsum, son">Tooltip Demo</span></p>
+ </article>
  </example>
  */
 angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
@@ -38,9 +38,9 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
 
                     options = {
                         tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' +
-                             '<header ng-if="title">{{title}}</header>' +
-                             '<section>{{content}}</section>' +
-                             '</div>',
+                            '<header ng-if="title">{{title}}</header>' +
+                            '<section>{{content}}</section>' +
+                            '</div>',
                         tplArrow: '<div class="arrow" ng-style="arrowStyle"></div>',
                         position: 'top',
                         space: 8,
@@ -69,8 +69,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                     tooltipElem.addClass(tooltip.position);
                     angular.element(document.body).append(tooltipElem);
 
-
-                    show = function () {
+                    show = tooltip.show = function () {
                         tooltip.$apply(function () {
                             tooltip.show = true;
                         });
@@ -78,7 +77,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
                         setPosition();
                     };
 
-                    hide = function () {
+                    hide = tooltip.hide = function () {
                         tooltip.$apply(function () {
                             tooltip.show = false;
                         });
