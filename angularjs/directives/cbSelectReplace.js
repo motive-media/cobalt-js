@@ -19,7 +19,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
             var template, options = [];
 
             template = '<div class="cb-select" tabindex="-1">' +
-                '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}"><span>{{ selectedItem.label }}</span><i></i></div>' +
+                '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}" title="selectedItem.label"><span>{{ selectedItem.label }}</span><i></i></div>' +
                 '<div class="cb-select-options" ng-show="show">' +
                 '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' +
                 '</div>' +

@@ -12,7 +12,7 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
             'options': '='
         },
         template: '<div class="cb-select" tabindex="-1">' +
-            '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}"><span>{{ selectedItem[labelKey] || placeholder }}</span><i></i></div>' +
+            '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}" title="{{ selectedItem[labelKey] }}"><span>{{ selectedItem[labelKey] || placeholder }}</span><i></i></div>' +
             '<div class="cb-select-options" ng-show="show">' +
             '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option[labelKey] }}</div>' +
             '</div>' +
