@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.4.2 - 2013-09-27 */
+/*! cobalt-js - v0.4.3 - 2013-09-27 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -56,7 +56,7 @@
             require: "?ngModel",
             compile: function(a, b) {
                 var c, d = [];
-                c = '<div class="cb-select" tabindex="-1">' + '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}" title="selectedItem.label"><span>{{ selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
+                c = '<div class="cb-select" tabindex="-1">' + '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}" title="{{ selectedItem.label }}"><span>{{ selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
                 angular.forEach(a.children(), function(a) {
                     a = angular.element(a);
                     d.push({
