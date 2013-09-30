@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.4.3 - 2013-09-27 */
+/*! cobalt-js - v0.4.4 - 2013-09-30 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -260,6 +260,9 @@
                         };
                         c.on("mouseenter", g);
                         c.on("mouseleave", h);
+                        b.$on("$destroy", function() {
+                            l.remove();
+                        });
                     }
                 };
             }
