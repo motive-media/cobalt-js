@@ -54,7 +54,15 @@
     </style>
 </head>
 <body ng-app="DemoApp">
-    <article>
+    <select ng-model="num">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+
+    <article ng-repeat="select in numSelects()">
         <h2>Top, Right, Bottom, Left</h2>
         <ul>
             <li><span cb-tooltip="{'position': 'top', 'space': 12}" data-content="Hello world (top)" cb-tooltip-open="true">Tooltip Demo Top</span></li>
@@ -72,9 +80,22 @@
     <script src="../angularjs/directives/cbSlider.js"></script>
     <script src="../angularjs/directives/cbTooltip.js"></script>
     <script src="../angularjs/directives/cbSelect.js"></script>
+    <script src="../angularjs/directives/cbSelectReplace.js"></script>
     <script src="../angularjs/cbUtilities.js"></script>
     <script>
-        angular.module('DemoApp', ['cb.utilities']);
+        angular.module('DemoApp', ['cb.utilities']).run(function ($rootScope) {
+            $rootScope.num = 1;
+
+            $rootScope.numSelects = function () {
+                var arr = [], num = $rootScope.num;
+
+                for (var i = 0; i < $rootScope.num; i++) {
+                    arr.push(i);
+                }
+
+                return arr;
+            }
+        });
     </script>
 </body>
 </html>

@@ -140,6 +140,11 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
 
                     element.on('mouseenter', show);
                     element.on('mouseleave', hide);
+
+                    // When element is destroyed, also destroy the tooltip
+                    scope.$on('$destroy', function () {
+                        tooltipElem.remove();
+                    });
                 }
             };
         }
