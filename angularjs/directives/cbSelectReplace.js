@@ -8,7 +8,7 @@
  * the DOM after initialization (see $compile service).
  */
 
-angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($window){
+angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
     'use strict';
 
     return {
@@ -68,32 +68,28 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($wi
                         close: function () {
                             select.show = false;
                         },
+                        scrollIntoView: function () {
+                            var optionsElem, optionElem;
+
+                            optionsElem = element.find('.cb-select-options');
+                            optionElem = element.find('.cb-select-option').eq(selectedIndex);
+
+                            if (optionElem.position().top + optionElem.outerHeight() > optionsElem.height()) {
+                                optionsElem.scrollTop(optionsElem.scrollTop() + optionElem.outerHeight() + optionElem.position().top - optionsElem.height());
+                            } else if (optionElem.position().top < 0) {
+                                optionsElem.scrollTop(optionsElem.scrollTop() + optionElem.position().top);
+                            }
+                        },
                         nextOption: function () {
                             if (selectedIndex < options.length - 1) {
-                                var optionElem, optionsElem;
-
                                 select.selectedItem = options[++selectedIndex];
-
-                                optionsElem = element.find('.cb-select-options');
-                                optionElem = element.find('.cb-select-option').eq(selectedIndex);
-
-                                if (optionElem.position().top + optionElem.outerHeight() > optionsElem.height()) {
-                                    optionsElem.scrollTop(optionsElem.scrollTop() + optionElem.outerHeight());
-                                }
+                                select.scrollIntoView();
                             }
                         },
                         prevOption: function () {
                             if (selectedIndex > 0) {
-                                var optionElem, optionsElem;
-
                                 select.selectedItem = options[--selectedIndex];
-
-                                optionsElem = element.find('.cb-select-options');
-                                optionElem = element.find('.cb-select-option').eq(selectedIndex);
-
-                                if (optionElem.position().top < 0) {
-                                    optionsElem.scrollTop(optionsElem.scrollTop() + optionElem.position().top);
-                                }
+                                select.scrollIntoView();
                             }
                         },
                         keypress: function (event) {
@@ -117,7 +113,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($wi
                         scope.$apply(function () {
                             select.focused = true;
                             select.open();
-                        })
+                        });
                     });
 
                     element.on('focusout', function () {
@@ -130,7 +126,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($wi
                     element.on('keydown', function (event) {
                         scope.$apply(function () {
                             select.keypress(event);
-                        })
+                        });
                     });
                 }
             };

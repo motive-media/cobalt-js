@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.4.4 - 2013-09-30 */
+/*! cobalt-js - v0.4.4 - 2013-10-01 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -10,45 +10,100 @@
             scope: {
                 options: "="
             },
-            template: '<div class="cb-select" tabindex="-1">' + '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}" title="{{ selectedItem[labelKey] }}"><span>{{ selectedItem[labelKey] || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + "<select>" + '<option ng-repeat="o in options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div>",
+            template: '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem[labelKey] }}"><span>{{ select.selectedItem[labelKey] || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == select.selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div>",
             replace: true,
             require: "?ngModel",
             link: function(a, b, c, d) {
-                var e;
-                e = {
+                var e, f, g, h = 0;
+                f = {
                     placeholder: "Select a value",
                     labelKey: "label",
                     valueKey: "value"
                 };
-                angular.extend(e, a.$eval(c.cbSelect));
-                a.valueKey = e.valueKey;
-                a.labelKey = e.labelKey;
-                a.placeholder = e.placeholder;
+                angular.extend(f, a.$eval(c.cbSelect));
+                a.valueKey = f.valueKey;
+                a.labelKey = f.labelKey;
+                a.placeholder = f.placeholder;
                 a.show = false;
+                e = a.options;
+                g = a.select = {
+                    show: false,
+                    focused: false,
+                    options: e,
+                    selectedItem: e[0],
+                    selectOption: function(a) {
+                        h = e.indexOf(a);
+                        g.selectedItem = a;
+                        g.close();
+                        if (d) {
+                            d.$setViewValue(a);
+                        }
+                    },
+                    toggle: function() {
+                        g.show = !g.show;
+                    },
+                    open: function() {
+                        g.show = true;
+                    },
+                    close: function() {
+                        g.show = false;
+                    },
+                    scrollIntoView: function() {
+                        var a, c;
+                        a = b.find(".cb-select-options");
+                        c = b.find(".cb-select-option").eq(h);
+                        if (c.position().top + c.outerHeight() > a.height()) {
+                            a.scrollTop(a.scrollTop() + c.outerHeight() + c.position().top - a.height());
+                        } else if (c.position().top < 0) {
+                            a.scrollTop(a.scrollTop() + c.position().top);
+                        }
+                    },
+                    nextOption: function() {
+                        if (h < e.length - 1) {
+                            g.selectedItem = e[++h];
+                            g.scrollIntoView();
+                        }
+                    },
+                    prevOption: function() {
+                        if (h > 0) {
+                            g.selectedItem = e[--h];
+                            g.scrollIntoView();
+                        }
+                    },
+                    keypress: function(a) {
+                        if (a.keyCode === 40) {
+                            g.nextOption();
+                        } else if (a.keyCode === 38) {
+                            g.prevOption();
+                        } else if (a.keyCode === 13) {
+                            g.toggle();
+                        }
+                    }
+                };
                 if (d) {
                     d.$render = function() {
                         a.selectedItem = d.$viewValue;
                     };
                 }
-                a.select = function(b) {
-                    a.selectedItem = b;
-                    a.show = false;
-                    if (d) {
-                        d.$setViewValue(b);
-                    }
-                };
-                a.toggle = function() {
-                    a.show = !a.show;
-                };
+                b.on("keydown", function(b) {
+                    a.$apply(function() {
+                        g.keypress(b);
+                    });
+                });
+                b.on("focus", function() {
+                    a.$apply(function() {
+                        g.open();
+                    });
+                });
                 b.on("focusout", function() {
                     a.$apply(function() {
-                        a.show = false;
+                        g.close();
                     });
                 });
             }
         };
     });
-    angular.module("cbSelectReplace", []).directive("cbSelectReplace", [ "$compile", function(a) {
+    angular.module("cbSelectReplace", []).directive("cbSelectReplace", function() {
         "use strict";
         return {
             restrict: "CA",
@@ -56,7 +111,7 @@
             require: "?ngModel",
             compile: function(a, b) {
                 var c, d = [];
-                c = '<div class="cb-select" tabindex="-1">' + '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}" title="{{ selectedItem.label }}"><span>{{ selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="show">' + '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
+                c = '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
                 angular.forEach(a.children(), function(a) {
                     a = angular.element(a);
                     d.push({
@@ -67,34 +122,88 @@
                 a.replaceWith(angular.element(c));
                 return {
                     post: function(a, b, c, e) {
-                        a.show = false;
-                        if (e) {
-                            e.$render = function() {
-                                a.selectedItem = e.$viewValue;
-                            };
-                        }
-                        a.options = d;
-                        a.selectedItem = d[0];
-                        a.select = function(b) {
-                            a.selectedItem = b;
-                            a.show = false;
-                            if (e) {
-                                e.$setViewValue(b);
+                        var f, g = 0;
+                        f = a.select = {
+                            show: false,
+                            focused: false,
+                            options: d,
+                            selectedItem: d[0],
+                            selectOption: function(a) {
+                                g = d.indexOf(a);
+                                f.selectedItem = a;
+                                f.close();
+                                if (e) {
+                                    e.$setViewValue(a);
+                                }
+                            },
+                            toggle: function() {
+                                f.show = !f.show;
+                            },
+                            open: function() {
+                                f.show = true;
+                            },
+                            close: function() {
+                                f.show = false;
+                            },
+                            scrollIntoView: function() {
+                                var a, c;
+                                a = b.find(".cb-select-options");
+                                c = b.find(".cb-select-option").eq(g);
+                                if (c.position().top + c.outerHeight() > a.height()) {
+                                    a.scrollTop(a.scrollTop() + c.outerHeight() + c.position().top - a.height());
+                                } else if (c.position().top < 0) {
+                                    a.scrollTop(a.scrollTop() + c.position().top);
+                                }
+                            },
+                            nextOption: function() {
+                                if (g < d.length - 1) {
+                                    f.selectedItem = d[++g];
+                                    f.scrollIntoView();
+                                }
+                            },
+                            prevOption: function() {
+                                if (g > 0) {
+                                    f.selectedItem = d[--g];
+                                    f.scrollIntoView();
+                                }
+                            },
+                            keypress: function(a) {
+                                if (a.keyCode === 40) {
+                                    f.nextOption();
+                                } else if (a.keyCode === 38) {
+                                    f.prevOption();
+                                } else if (a.keyCode === 13) {
+                                    f.toggle();
+                                }
                             }
                         };
-                        a.toggle = function() {
-                            a.show = !a.show;
-                        };
+                        if (e) {
+                            e.$render = function() {
+                                f.selectedItem = e.$viewValue;
+                            };
+                        }
+                        b.on("focus", function() {
+                            a.$apply(function() {
+                                f.focused = true;
+                                f.open();
+                            });
+                        });
                         b.on("focusout", function() {
                             a.$apply(function() {
-                                a.show = false;
+                                f.focused = false;
+                                f.close();
+                            });
+                        });
+                        b.on("keydown", function(b) {
+                            a.$apply(function() {
+                                f.keypress(b);
                             });
                         });
                     }
                 };
             }
         };
-    } ]);
+    });
     angular.module("cbSlider", []).directive("cbSlider", [ "$timeout", function(a) {
         "use strict";
         return {

@@ -4,15 +4,76 @@
     <meta charset="utf-8">
     <title>cbSelect Demo</title>
 
-    <style>
+    <style type="text/css">
+        input:focus, .cb-select:focus {
+            outline-width: 1px;
+            outline-color: #547d93;
+            outline-style: dashed;
+            outline-offset: 1px;
+        }
+
+        body {
+            font-family: Helvetica;
+            font-size: 12px;
+        }
+
+        input {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 30px;
+            padding: 0 10px;
+            margin-bottom: 10px;
+            border: solid 1px #000;
+            box-sizing: border-box;
+        }
+
         article {
             display: table;
             position: relative;
             margin: 0 auto;
         }
 
-        .cb-select select {
-            display: none;;
+        .cb-select {
+            display: block;
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .cb-select-value {
+            display: block;
+            position: relative;
+            border: solid 1px #000;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .cb-select-options {
+            display: block;
+            position: absolute;
+            top: 35px;
+            border: solid 1px #aeaeae;
+            width: 100%;
+            left: 0;
+            box-sizing: border-box;
+            max-height: 160px;
+            overflow: auto;
+        }
+
+        .cb-select-option {
+            padding: 4px 10px;
+        }
+
+        .cb-select-option:hover {
+            background-color: #aabdc8;
+        }
+
+        .cb-select-option.active {
+            background-color: #8699a4;
         }
     </style>
 </head>
