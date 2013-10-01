@@ -8,7 +8,7 @@
  * the DOM after initialization (see $compile service).
  */
 
-angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($compile){
+angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($window){
     'use strict';
 
     return {
@@ -18,13 +18,13 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
         compile: function (tElement, tAttrs) {
             var template, options = [];
 
-            template = '<div class="cb-select" tabindex="-1">' +
-                '<div class="cb-select-value" ng-click="toggle()" ng-class="{active: show}" title="{{ selectedItem.label }}"><span>{{ selectedItem.label }}</span><i></i></div>' +
-                '<div class="cb-select-options" ng-show="show">' +
-                '<div class="cb-select-option" ng-repeat="option in options" ng-click="select(option)" ng-class="{active: option == selectedItem}">{{ option.label }}</div>' +
+            template = '<div class="cb-select" tabindex="0">' +
+                '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
+                '<div class="cb-select-options" ng-show="select.show">' +
+                '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
                 '</div>' +
                 '<select ng-hide="true">' +
-                '<option ng-repeat="o in options" value="{{ o.value }}" ng-selected="o.value == selectedItem.value">{{ o.label }}</option>' +
+                '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' +
                 '</select>' +
                 '</div>';
 
@@ -42,34 +42,95 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
 
             return {
                 post: function (scope, element, attrs, ngModel) {
-                    scope.show = false;
+                    var select, selectedIndex = 0;
 
-                    if (ngModel) {
-                        ngModel.$render = function () {
-                            scope.selectedItem = ngModel.$viewValue;
-                        };
-                    }
+                    select = scope.select = {
+                        show: false,
+                        focused: false,
+                        options: options,
+                        selectedItem: options[0],
+                        selectOption: function (option) {
+                            selectedIndex = options.indexOf(option);
 
-                    scope.options = options;
-                    scope.selectedItem = options[0];
+                            select.selectedItem = option;
+                            select.close();
 
-                    scope.select = function (item) {
-                        scope.selectedItem = item;
-                        scope.show = false;
+                            if (ngModel) {
+                                ngModel.$setViewValue(option);
+                            }
+                        },
+                        toggle: function () {
+                            select.show = !select.show;
+                        },
+                        open: function () {
+                            select.show = true;
+                        },
+                        close: function () {
+                            select.show = false;
+                        },
+                        nextOption: function () {
+                            if (selectedIndex < options.length - 1) {
+                                var optionElem, optionsElem;
 
-                        if (ngModel) {
-                            ngModel.$setViewValue(item);
+                                select.selectedItem = options[++selectedIndex];
+
+                                optionsElem = element.find('.cb-select-options');
+                                optionElem = element.find('.cb-select-option').eq(selectedIndex);
+
+                                if (optionElem.position().top + optionElem.outerHeight() > optionsElem.height()) {
+                                    optionsElem.scrollTop(optionsElem.scrollTop() + optionElem.outerHeight());
+                                }
+                            }
+                        },
+                        prevOption: function () {
+                            if (selectedIndex > 0) {
+                                var optionElem, optionsElem;
+
+                                select.selectedItem = options[--selectedIndex];
+
+                                optionsElem = element.find('.cb-select-options');
+                                optionElem = element.find('.cb-select-option').eq(selectedIndex);
+
+                                if (optionElem.position().top < 0) {
+                                    optionsElem.scrollTop(optionsElem.scrollTop() + optionElem.position().top);
+                                }
+                            }
+                        },
+                        keypress: function (event) {
+                            if (event.keyCode === 40) {
+                                select.nextOption();
+                            } else if (event.keyCode === 38) {
+                                select.prevOption();
+                            } else if (event.keyCode === 13) {
+                                select.toggle();
+                            }
                         }
                     };
 
-                    scope.toggle = function () {
-                        scope.show = !scope.show;
-                    };
+                    if (ngModel) {
+                        ngModel.$render = function () {
+                            select.selectedItem = ngModel.$viewValue;
+                        };
+                    }
 
-                    element.on('focusout', function(){
-                        scope.$apply(function(){
-                            scope.show = false;
+                    element.on('focus', function () {
+                        scope.$apply(function () {
+                            select.focused = true;
+                            select.open();
+                        })
+                    });
+
+                    element.on('focusout', function () {
+                        scope.$apply(function () {
+                            select.focused = false;
+                            select.close();
                         });
+                    });
+
+                    element.on('keydown', function (event) {
+                        scope.$apply(function () {
+                            select.keypress(event);
+                        })
                     });
                 }
             };

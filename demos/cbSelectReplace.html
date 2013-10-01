@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>cbSelectReplace Demo and Test Ground</title>
+
+    <style type="text/css">
+        input:focus, .cb-select:focus {
+            outline-width: 1px;
+            outline-color: #547d93;
+            outline-style: dashed;
+            outline-offset: 1px;
+        }
+
+        body {
+            font-family: Helvetica;
+            font-size: 12px;
+        }
+
+        input {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 30px;
+            padding: 0 10px;
+            margin-bottom: 10px;
+            border: solid 1px #000;
+            box-sizing: border-box;
+        }
+
+        .center {
+            display: table;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .cb-select {
+            display: block;
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .cb-select-value {
+            display: block;
+            position: relative;
+            border: solid 1px #000;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .cb-select-options {
+            display: block;
+            position: absolute;
+            top: 35px;
+            border: solid 1px #aeaeae;
+            width: 100%;
+            left: 0;
+            box-sizing: border-box;
+            max-height: 160px;
+            overflow: auto;
+        }
+
+        .cb-select-option {
+            padding: 4px 10px;
+        }
+
+        .cb-select-option:hover {
+            background-color: #aabdc8;
+        }
+
+        .cb-select-option.active {
+            background-color: #8699a4;
+        }
+    </style>
+</head>
+<body ng-app="cbSelectReplace">
+
+
+<div class="center">
+    <h1>cbSelectReplace</h1>
+
+    <input type="text" placeholder="First Name"/>
+
+    <input type="text" placeholder="Last Name"/>
+
+    <select class="cb-select-replace" name="" id="">
+        <option value="">Age</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+        <option value="4">Four</option>
+        <option value="5">Five</option>
+        <option value="6">Six</option>
+        <option value="7">Seven</option>
+        <option value="8">Eight</option>
+        <option value="9">Nine</option>
+        <option value="10">Ten</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+        <option value="4">Four</option>
+        <option value="5">Five</option>
+        <option value="6">Six</option>
+        <option value="7">Seven</option>
+        <option value="8">Eight</option>
+        <option value="9">Nine</option>
+        <option value="10">Ten</option>
+    </select>
+</div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script>
+<script src="../angularjs/directives/cbSelectReplace.js"></script>
+</body>
+</html>
