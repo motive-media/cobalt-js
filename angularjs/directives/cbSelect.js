@@ -117,7 +117,9 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
             });
 
             element.on('keydown', function (event) {
-                event.preventDefault();
+                if (event.keyCode !== 9) {
+                    event.preventDefault();
+                }
 
                 scope.$apply(function () {
                     select.keypress(event);

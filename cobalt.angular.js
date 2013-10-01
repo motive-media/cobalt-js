@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.5.1 - 2013-10-01 */
+/*! cobalt-js - v0.5.2 - 2013-10-01 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -96,7 +96,9 @@
                     });
                 });
                 b.on("keydown", function(b) {
-                    b.preventDefault();
+                    if (b.keyCode !== 9) {
+                        b.preventDefault();
+                    }
                     a.$apply(function() {
                         g.keypress(b);
                     });
@@ -196,7 +198,9 @@
                             });
                         });
                         b.on("keydown", function(b) {
-                            b.preventDefault();
+                            if (b.keyCode !== 9) {
+                                b.preventDefault();
+                            }
                             a.$apply(function() {
                                 f.keypress(b);
                             });
