@@ -45,7 +45,7 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
                 options: options,
                 selectedItem: options[0],
                 selectOption: function (option) {
-                    selectedIndex = options.indexOf(option);
+                    selectedIndex = jQuery.inArray(option, options);
 
                     select.selectedItem = option;
                     select.close();
@@ -103,6 +103,11 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
                     scope.selectedItem = ngModel.$viewValue;
                 };
             }
+
+            // Force focus for IE
+            element.on('click', function () {
+                element.trigger('focus');
+            });
 
             element.on('focus', function () {
                 scope.$apply(function () {

@@ -21,7 +21,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
             template = '<div class="cb-select" tabindex="0">' +
                 '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
                 '<div class="cb-select-options" ng-show="select.show">' +
-                '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
+                '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
                 '</div>' +
                 '<select ng-hide="true">' +
                 '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' +
@@ -50,7 +50,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                         options: options,
                         selectedItem: options[0],
                         selectOption: function (option) {
-                            selectedIndex = options.indexOf(option);
+                            selectedIndex = jQuery.inArray(option, options);
 
                             select.selectedItem = option;
                             select.close();
@@ -108,6 +108,11 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                             select.selectedItem = ngModel.$viewValue;
                         };
                     }
+
+                    // Force focus for IE
+                    element.on('click', function () {
+                        element.trigger('focus');
+                    });
 
                     element.on('focus', function () {
                         scope.$apply(function () {

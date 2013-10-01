@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.5.2 - 2013-10-01 */
+/*! cobalt-js - v0.5.3 - 2013-10-01 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -32,7 +32,7 @@
                     options: e,
                     selectedItem: e[0],
                     selectOption: function(a) {
-                        h = e.indexOf(a);
+                        h = jQuery.inArray(a, e);
                         g.selectedItem = a;
                         g.close();
                         if (d) {
@@ -85,6 +85,9 @@
                         a.selectedItem = d.$viewValue;
                     };
                 }
+                b.on("click", function() {
+                    b.trigger("focus");
+                });
                 b.on("focus", function() {
                     a.$apply(function() {
                         g.open();
@@ -114,7 +117,7 @@
             require: "?ngModel",
             compile: function(a, b) {
                 var c, d = [];
-                c = '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
+                c = '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
                 angular.forEach(a.children(), function(a) {
                     a = angular.element(a);
                     d.push({
@@ -132,7 +135,7 @@
                             options: d,
                             selectedItem: d[0],
                             selectOption: function(a) {
-                                g = d.indexOf(a);
+                                g = jQuery.inArray(a, d);
                                 f.selectedItem = a;
                                 f.close();
                                 if (e) {
@@ -185,6 +188,9 @@
                                 f.selectedItem = e.$viewValue;
                             };
                         }
+                        b.on("click", function() {
+                            b.trigger("focus");
+                        });
                         b.on("focus", function() {
                             a.$apply(function() {
                                 f.focused = true;
