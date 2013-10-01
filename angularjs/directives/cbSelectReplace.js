@@ -124,6 +124,8 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                     });
 
                     element.on('keydown', function (event) {
+                        event.preventDefault();
+
                         scope.$apply(function () {
                             select.keypress(event);
                         });

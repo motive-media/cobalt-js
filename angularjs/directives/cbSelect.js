@@ -104,12 +104,6 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
                 };
             }
 
-            element.on('keydown', function (event) {
-                scope.$apply(function () {
-                    select.keypress(event);
-                });
-            });
-
             element.on('focus', function () {
                 scope.$apply(function () {
                     select.open();
@@ -119,6 +113,14 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
             element.on('focusout', function () {
                 scope.$apply(function () {
                     select.close();
+                });
+            });
+
+            element.on('keydown', function (event) {
+                event.preventDefault();
+
+                scope.$apply(function () {
+                    select.keypress(event);
                 });
             });
         }
