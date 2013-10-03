@@ -33,8 +33,7 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
         restrict: 'A',
         scope: {collection: '=cbSliderData'},
         link: function (scope, element, attrs) {
-            var lastPage,
-                next,
+            var next,
                 options,
                 resetTimer,
                 timer = null,
@@ -54,14 +53,42 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
             angular.extend(options, scope.$eval(attrs.cbSlider));
 
             slider = scope.slider = {
-                currentPage: options.currentPage
+                currentPage: options.currentPage,
+                next: function () {
+                    resetTimer();
+
+                    if (slider.currentPage < slider.lastPage) {
+                        slider.left = true;
+                        slider.currentPage++;
+                    }
+                },
+                prev: function () {
+                    resetTimer();
+
+                    if (slider.currentPage > 0) {
+                        slider.left = false;
+                        slider.currentPage--;
+                    }
+                },
+                goto: function (index) {
+                    resetTimer();
+
+                    if (index >= 0 && index <= slider.lastPage) {
+                        if (slider.currentPage < index) {
+                            slider.left = true;
+                        } else {
+                            slider.left = false;
+                        }
+                        slider.currentPage = index;
+                    }
+                }
             };
 
             scope.$watch('collection', function (newValue){
                 if (newValue === null) {
                     slide[options.collectionName] = null;
                 } else {
-                    lastPage = Math.ceil(newValue.length / options.perPage) - 1;
+                    slider.lastPage = Math.ceil(newValue.length / options.perPage) - 1;
 
                     // Split collection into pages, if necessary
                     if (options.perPage === 1) {
@@ -78,7 +105,7 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
             });
 
             next = function () {
-                var nextId = (slider.currentPage + 1) % (lastPage + 1);
+                var nextId = (slider.currentPage + 1) % (slider.lastPage + 1);
 
                 slider.left = true;
                 slider.currentPage = nextId;
@@ -89,37 +116,6 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
                 if (options.autoPlay && (timer !== null)) {
                     $timeout.cancel(timer);
                     timer = $timeout(next, options.initialDelay);
-                }
-            };
-
-            slider.next = function () {
-                resetTimer();
-
-                if (slider.currentPage < lastPage) {
-                    slider.left = true;
-                    slider.currentPage++;
-                }
-            };
-
-            slider.prev = function () {
-                resetTimer();
-
-                if (slider.currentPage > 0) {
-                    slider.left = false;
-                    slider.currentPage--;
-                }
-            };
-
-            slider.goto = function (index) {
-                resetTimer();
-
-                if (index >= 0 && index <= lastPage) {
-                    if (slider.currentPage < index) {
-                        slider.left = true;
-                    } else {
-                        slider.left = false;
-                    }
-                    slider.currentPage = index;
                 }
             };
 
