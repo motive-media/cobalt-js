@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.5.3 - 2013-10-03 */
+/*! cobalt-js - v0.5.4 - 2013-10-03 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
