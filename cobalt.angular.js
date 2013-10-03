@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.5.3 - 2013-10-01 */
+/*! cobalt-js - v0.5.3 - 2013-10-03 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -224,8 +224,8 @@
                 collection: "=cbSliderData"
             },
             link: function(b, c, d) {
-                var e, f, g, h, i = null, j, k;
-                g = {
+                var e, f, g, h = null, i, j;
+                f = {
                     currentPage: 0,
                     perPage: 1,
                     collectionName: "pages",
@@ -234,65 +234,65 @@
                     delay: 5e3,
                     delayFlux: 1e3
                 };
-                angular.extend(g, b.$eval(d.cbSlider));
-                j = b.slider = {
-                    currentPage: g.currentPage
+                angular.extend(f, b.$eval(d.cbSlider));
+                i = b.slider = {
+                    currentPage: f.currentPage,
+                    next: function() {
+                        g();
+                        if (i.currentPage < i.lastPage) {
+                            i.left = true;
+                            i.currentPage++;
+                        }
+                    },
+                    prev: function() {
+                        g();
+                        if (i.currentPage > 0) {
+                            i.left = false;
+                            i.currentPage--;
+                        }
+                    },
+                    "goto": function(a) {
+                        g();
+                        if (a >= 0 && a <= i.lastPage) {
+                            if (i.currentPage < a) {
+                                i.left = true;
+                            } else {
+                                i.left = false;
+                            }
+                            i.currentPage = a;
+                        }
+                    }
                 };
                 b.$watch("collection", function(a) {
                     if (a === null) {
-                        slide[g.collectionName] = null;
+                        slide[f.collectionName] = null;
                     } else {
-                        e = Math.ceil(a.length / g.perPage) - 1;
-                        if (g.perPage === 1) {
-                            k = a;
+                        i.lastPage = Math.ceil(a.length / f.perPage) - 1;
+                        if (f.perPage === 1) {
+                            j = a;
                         } else {
-                            k = [];
-                            for (var b = 0, c = a.length; b < c; b += g.perPage) {
-                                k.push(a.slice(b, b + g.perPage));
+                            j = [];
+                            for (var b = 0, c = a.length; b < c; b += f.perPage) {
+                                j.push(a.slice(b, b + f.perPage));
                             }
                         }
-                        j[g.collectionName] = k;
+                        i[f.collectionName] = j;
                     }
                 });
-                f = function() {
-                    var b = (j.currentPage + 1) % (e + 1);
-                    j.left = true;
-                    j.currentPage = b;
-                    i = a(f, g.delay + Math.random() * g.delayFlux);
+                e = function() {
+                    var b = (i.currentPage + 1) % (i.lastPage + 1);
+                    i.left = true;
+                    i.currentPage = b;
+                    h = a(e, f.delay + Math.random() * f.delayFlux);
                 };
-                h = function() {
-                    if (g.autoPlay && i !== null) {
-                        a.cancel(i);
-                        i = a(f, g.initialDelay);
+                g = f.autoPlay ? function() {
+                    if (h !== null) {
+                        a.cancel(h);
+                        h = a(e, f.initialDelay);
                     }
-                };
-                j.next = function() {
-                    h();
-                    if (j.currentPage < e) {
-                        j.left = true;
-                        j.currentPage++;
-                    }
-                };
-                j.prev = function() {
-                    h();
-                    if (j.currentPage > 0) {
-                        j.left = false;
-                        j.currentPage--;
-                    }
-                };
-                j.goto = function(a) {
-                    h();
-                    if (a >= 0 && a <= e) {
-                        if (j.currentPage < a) {
-                            j.left = true;
-                        } else {
-                            j.left = false;
-                        }
-                        j.currentPage = a;
-                    }
-                };
-                if (g.autoPlay === true) {
-                    i = a(f, g.initialDelay);
+                } : angular.noop;
+                if (f.autoPlay === true) {
+                    h = a(e, f.initialDelay);
                 }
             }
         };

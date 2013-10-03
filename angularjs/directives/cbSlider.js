@@ -112,12 +112,12 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
                 timer = $timeout(next, options.delay + Math.random() * options.delayFlux);
             };
 
-            resetTimer = function () {
-                if (options.autoPlay && (timer !== null)) {
+            resetTimer = (options.autoPlay) ? function () {
+                if (timer !== null) {
                     $timeout.cancel(timer);
                     timer = $timeout(next, options.initialDelay);
                 }
-            };
+            } : angular.noop;
 
             if (options.autoPlay === true) {
                 timer = $timeout(next, options.initialDelay);
