@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.5.4 - 2013-10-03 */
+/*! cobalt-js - v0.6.0 - 2013-10-08 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -220,12 +220,11 @@
         "use strict";
         return {
             restrict: "A",
-            scope: {
-                collection: "=cbSliderData"
-            },
-            link: function(b, c, d) {
-                var e, f, g, h = null, i, j;
-                f = {
+            scope: true,
+            require: "ngModel",
+            link: function(b, c, d, e) {
+                var f, g, h, i = null, j, k;
+                g = {
                     currentPage: 0,
                     perPage: 1,
                     collectionName: "pages",
@@ -234,65 +233,66 @@
                     delay: 5e3,
                     delayFlux: 1e3
                 };
-                angular.extend(f, b.$eval(d.cbSlider));
-                i = b.slider = {
-                    currentPage: f.currentPage,
+                angular.extend(g, b.$eval(d.cbSlider));
+                j = b.slider = {
+                    currentPage: g.currentPage,
                     next: function() {
-                        g();
-                        if (i.currentPage < i.lastPage) {
-                            i.left = true;
-                            i.currentPage++;
+                        h();
+                        if (j.currentPage < j.lastPage) {
+                            j.left = true;
+                            j.currentPage++;
                         }
                     },
                     prev: function() {
-                        g();
-                        if (i.currentPage > 0) {
-                            i.left = false;
-                            i.currentPage--;
+                        h();
+                        if (j.currentPage > 0) {
+                            j.left = false;
+                            j.currentPage--;
                         }
                     },
                     "goto": function(a) {
-                        g();
-                        if (a >= 0 && a <= i.lastPage) {
-                            if (i.currentPage < a) {
-                                i.left = true;
+                        h();
+                        if (a >= 0 && a <= j.lastPage) {
+                            if (j.currentPage < a) {
+                                j.left = true;
                             } else {
-                                i.left = false;
+                                j.left = false;
                             }
-                            i.currentPage = a;
+                            j.currentPage = a;
                         }
                     }
                 };
-                b.$watch("collection", function(a) {
-                    if (a === null) {
-                        slide[f.collectionName] = null;
+                e.$render = function() {
+                    var a = e.$viewValue;
+                    if (!angular.isDefined(a)) {
+                        j[g.collectionName] = null;
                     } else {
-                        i.lastPage = Math.ceil(a.length / f.perPage) - 1;
-                        if (f.perPage === 1) {
-                            j = a;
+                        j.lastPage = Math.ceil(a.length / g.perPage) - 1;
+                        if (g.perPage === 1) {
+                            k = a;
                         } else {
-                            j = [];
-                            for (var b = 0, c = a.length; b < c; b += f.perPage) {
-                                j.push(a.slice(b, b + f.perPage));
+                            k = [];
+                            for (var b = 0, c = a.length; b < c; b += g.perPage) {
+                                k.push(a.slice(b, b + g.perPage));
                             }
                         }
-                        i[f.collectionName] = j;
+                        j[g.collectionName] = k;
                     }
-                });
-                e = function() {
-                    var b = (i.currentPage + 1) % (i.lastPage + 1);
-                    i.left = true;
-                    i.currentPage = b;
-                    h = a(e, f.delay + Math.random() * f.delayFlux);
                 };
-                g = f.autoPlay ? function() {
-                    if (h !== null) {
-                        a.cancel(h);
-                        h = a(e, f.initialDelay);
+                f = function() {
+                    var b = (j.currentPage + 1) % (j.lastPage + 1);
+                    j.left = true;
+                    j.currentPage = b;
+                    i = a(f, g.delay + Math.random() * g.delayFlux);
+                };
+                h = g.autoPlay ? function() {
+                    if (i !== null) {
+                        a.cancel(i);
+                        i = a(f, g.initialDelay);
                     }
                 } : angular.noop;
-                if (f.autoPlay === true) {
-                    h = a(e, f.initialDelay);
+                if (g.autoPlay === true) {
+                    i = a(f, g.initialDelay);
                 }
             }
         };
