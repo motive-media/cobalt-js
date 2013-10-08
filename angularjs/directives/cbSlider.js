@@ -18,7 +18,7 @@
  *
  <example>
     <div ng-init='people = [{"name":"Arnold"},{"name":"Joshua"},{"name":"Cassiopeia"}]'
-         cb-slider='{perPage: 2, collectionName: 'groups'}' cb-slider-data="people">
+         cb-slider='{perPage: 2, collectionName: "groups"}' ng-model="people">
         <div ng-repeat="group in slider.groups">
             <span ng-repeat="person in group">{{ person.name }}</span>
         </div>
@@ -31,8 +31,9 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
 
     return {
         restrict: 'A',
-        scope: {collection: '=cbSliderData'},
-        link: function (scope, element, attrs) {
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, element, attrs, ngModel) {
             var next,
                 options,
                 resetTimer,
@@ -84,9 +85,10 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
                 }
             };
 
-            scope.$watch('collection', function (newValue){
-                if (newValue === null) {
-                    slide[options.collectionName] = null;
+            ngModel.$render = function () {
+                var newValue = ngModel.$viewValue;
+                if (!angular.isDefined(newValue)) {
+                    slider[options.collectionName] = null;
                 } else {
                     slider.lastPage = Math.ceil(newValue.length / options.perPage) - 1;
 
@@ -102,7 +104,7 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
 
                     slider[options.collectionName] = thePages;
                 }
-            });
+            };
 
             next = function () {
                 var nextId = (slider.currentPage + 1) % (slider.lastPage + 1);

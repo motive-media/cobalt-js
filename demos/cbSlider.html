@@ -58,7 +58,7 @@
 
     <h1>Basic List</h1>
 
-    <div cb-slider="{collectionName: 'people'}" cb-slider-data="people">
+    <div cb-slider="{collectionName: 'people'}" ng-model="people">
         <div class="group">
             <div class="group-title">People:</div>
             <div class="group-name" ng-repeat="person in slider.people ">
@@ -69,7 +69,7 @@
 
     <h1>Grouped List</h1>
 
-    <div cb-slider="{collectionName: 'groups', perPage: 3}" cb-slider-data="people">
+    <div cb-slider="{collectionName: 'groups', perPage: 3}" ng-model="people">
         <div class="group" ng-repeat="group in slider.groups">
             <div class="group-title">Group {{ $index }}:</div>
             <div class="group-name" ng-repeat="person in group">
@@ -80,7 +80,7 @@
 
     <h1>Basic Slider</h1>
 
-    <div cb-slider="{collectionName: 'people'}" cb-slider-data="people">
+    <div cb-slider="{collectionName: 'people'}" ng-model="people">
         <div class="group" ng-repeat="person in slider.people" ng-show="slider.currentPage == $index">
             <div class="group-title">{{ person.name }}</div>
         </div>
@@ -93,7 +93,7 @@
 
     <h2>Grouped Slider</h2>
 
-    <div cb-slider="{collectionName: 'groups', perPage: 3}" cb-slider-data="people">
+    <div cb-slider="{collectionName: 'groups', perPage: 3}" ng-model="people">
         <div class="group" ng-repeat="group in slider.groups" ng-show="slider.currentPage == $index">
             <div class="group-title">Group {{ $index }}:</div>
             <div class="group-name" ng-repeat="person in group">
@@ -107,14 +107,34 @@
         </div>
     </div>
 
+    <h2>Grouped Slider w/ $rootScope reference</h2>
+
+    <div cb-slider="{collectionName: 'groups', perPage: 3}" ng-model="people">
+        <div class="group" ng-repeat="group in slider.groups" ng-show="slider.currentPage == $index">
+            <div class="group-title">Group {{ $index }}:</div>
+            <div class="group-name" ng-repeat="person in group">
+                {{ person.name }}
+            </div>
+        </div>
+        <div class="controls" ng-click="hey()">
+            <a class="control-left" ng-click="slider.prev()">Prev</a>
+            <div class="divider"></div>
+            <a class="control-right" ng-click="slider.next()">Next</a>
+        </div>
+    </div>
+
+</div>
+
 </div>
 
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.min.js"></script>
-<script type="text/javascript" src="../angularjs/cbDirectives.js"></script>
 <script type="text/javascript" src="../angularjs/directives/cbSlider.js"></script>
-<script type="text/javascript" src="../angularjs/cbUtilities.js"></script>
 <script type="text/javascript">
-    angular.module('DemoApp',['cb.utilities']);
+    angular.module('DemoApp',['cbSlider']).run(function ($rootScope) {
+        $rootScope.hey = function () {
+            console.log( "Hey" );
+        }
+    });
 </script>
 </body>
 </html>
