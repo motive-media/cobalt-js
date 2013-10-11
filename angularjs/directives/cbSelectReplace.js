@@ -16,7 +16,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
         scope: true,
         require: '?ngModel',
         compile: function (tElement, tAttrs) {
-            var template, options = [];
+            var template, options = [], startingIndex = 0;
 
             template = '<div class="cb-select" tabindex="0">' +
                 '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
@@ -28,13 +28,17 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                 '</select>' +
                 '</div>';
 
-            angular.forEach(tElement.children(), function (opt) {
+            angular.forEach(tElement.children(), function (opt, index) {
                 opt = angular.element(opt);
 
                 options.push({
                     label: opt.text(),
                     value: opt.val()
                 });
+
+                if (opt.attr('selected') == 'selected') {
+                    startingIndex = index;
+                }
             });
 
             // Replace select manually, after all options are processed
@@ -48,7 +52,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                         show: false,
                         focused: false,
                         options: options,
-                        selectedItem: options[0],
+                        selectedItem: options[startingIndex],
                         selectOption: function (option) {
                             selectedIndex = jQuery.inArray(option, options);
 
