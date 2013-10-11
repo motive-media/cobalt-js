@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.6.0 - 2013-10-08 */
+/*! cobalt-js - v0.6.1 - 2013-10-11 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -116,45 +116,48 @@
             scope: true,
             require: "?ngModel",
             compile: function(a, b) {
-                var c, d = [];
+                var c, d = [], e = 0;
                 c = '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
-                angular.forEach(a.children(), function(a) {
+                angular.forEach(a.children(), function(a, b) {
                     a = angular.element(a);
                     d.push({
                         label: a.text(),
                         value: a.val()
                     });
+                    if (a.attr("selected") === "selected") {
+                        e = b;
+                    }
                 });
                 a.replaceWith(angular.element(c));
                 return {
-                    post: function(a, b, c, e) {
-                        var f, g = 0;
-                        f = a.select = {
+                    post: function(a, b, c, f) {
+                        var g, h = 0;
+                        g = a.select = {
                             show: false,
                             focused: false,
                             options: d,
-                            selectedItem: d[0],
+                            selectedItem: d[e],
                             selectOption: function(a) {
-                                g = jQuery.inArray(a, d);
-                                f.selectedItem = a;
-                                f.close();
-                                if (e) {
-                                    e.$setViewValue(a);
+                                h = jQuery.inArray(a, d);
+                                g.selectedItem = a;
+                                g.close();
+                                if (f) {
+                                    f.$setViewValue(a);
                                 }
                             },
                             toggle: function() {
-                                f.show = !f.show;
+                                g.show = !g.show;
                             },
                             open: function() {
-                                f.show = true;
+                                g.show = true;
                             },
                             close: function() {
-                                f.show = false;
+                                g.show = false;
                             },
                             scrollIntoView: function() {
                                 var a, c;
                                 a = b.find(".cb-select-options");
-                                c = b.find(".cb-select-option").eq(g);
+                                c = b.find(".cb-select-option").eq(h);
                                 if (c.position().top + c.outerHeight() > a.height()) {
                                     a.scrollTop(a.scrollTop() + c.outerHeight() + c.position().top - a.height());
                                 } else if (c.position().top < 0) {
@@ -162,30 +165,30 @@
                                 }
                             },
                             nextOption: function() {
-                                if (g < d.length - 1) {
-                                    f.selectedItem = d[++g];
-                                    f.scrollIntoView();
+                                if (h < d.length - 1) {
+                                    g.selectedItem = d[++h];
+                                    g.scrollIntoView();
                                 }
                             },
                             prevOption: function() {
-                                if (g > 0) {
-                                    f.selectedItem = d[--g];
-                                    f.scrollIntoView();
+                                if (h > 0) {
+                                    g.selectedItem = d[--h];
+                                    g.scrollIntoView();
                                 }
                             },
                             keypress: function(a) {
                                 if (a.keyCode === 40) {
-                                    f.nextOption();
+                                    g.nextOption();
                                 } else if (a.keyCode === 38) {
-                                    f.prevOption();
+                                    g.prevOption();
                                 } else if (a.keyCode === 13) {
-                                    f.toggle();
+                                    g.toggle();
                                 }
                             }
                         };
-                        if (e) {
-                            e.$render = function() {
-                                f.selectedItem = e.$viewValue;
+                        if (f) {
+                            f.$render = function() {
+                                g.selectedItem = f.$viewValue;
                             };
                         }
                         b.on("click", function() {
@@ -193,14 +196,14 @@
                         });
                         b.on("focus", function() {
                             a.$apply(function() {
-                                f.focused = true;
-                                f.open();
+                                g.focused = true;
+                                g.open();
                             });
                         });
                         b.on("focusout", function() {
                             a.$apply(function() {
-                                f.focused = false;
-                                f.close();
+                                g.focused = false;
+                                g.close();
                             });
                         });
                         b.on("keydown", function(b) {
@@ -208,7 +211,7 @@
                                 b.preventDefault();
                             }
                             a.$apply(function() {
-                                f.keypress(b);
+                                g.keypress(b);
                             });
                         });
                     }

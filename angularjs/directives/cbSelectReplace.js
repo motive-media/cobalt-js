@@ -36,7 +36,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                     value: opt.val()
                 });
 
-                if (opt.attr('selected') == 'selected') {
+                if (opt.attr('selected') === 'selected') {
                     startingIndex = index;
                 }
             });
