@@ -28,7 +28,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                 '</select>' +
                 '</div>';
 
-            angular.forEach(tElement.children(), function (opt, index) {
+            angular.forEach(tElement.find('option'), function (opt, index) {
                 opt = angular.element(opt);
 
                 options.push({
