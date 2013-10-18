@@ -19,7 +19,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
             var template, options = [], startingIndex = 0, theSelect, selectName;
 
             theSelect = (tElement.get(0).nodeName.toLowerCase() === 'select') ? tElement : tElement.find('select');
-            selectName = theSelect.attr('name');
+            selectName = theSelect.attr('name') || '';
 
             template = '<div class="cb-select" tabindex="0">' +
                 '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
