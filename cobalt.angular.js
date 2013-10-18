@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.6.2 - 2013-10-14 */
+/*! cobalt-js - v0.6.3 - 2013-10-18 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -116,9 +116,11 @@
             scope: true,
             require: "?ngModel",
             compile: function(a, b) {
-                var c, d = [], e = 0;
-                c = '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
-                angular.forEach(a.find("option"), function(a, b) {
+                var c, d = [], e = 0, f, g;
+                f = a.get(0).nodeName.toLowerCase() === "select" ? a : a.find("select");
+                g = f.attr("name");
+                c = '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true" name="' + g + '">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
+                angular.forEach(f.find("option"), function(a, b) {
                     a = angular.element(a);
                     d.push({
                         label: a.text(),
@@ -128,7 +130,7 @@
                         e = b;
                     }
                 });
-                a.replaceWith(angular.element(c));
+                f.replaceWith(angular.element(c));
                 return {
                     post: function(a, b, c, f) {
                         var g, h = 0;
