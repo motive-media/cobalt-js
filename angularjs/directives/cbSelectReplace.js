@@ -16,12 +16,13 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
         scope: true,
         require: '?ngModel',
         compile: function (tElement, tAttrs) {
-            var template, options = [], startingIndex = 0, theSelect, selectName;
+            var template, options = [], startingIndex = 0, theSelect, selectName, tabindex;
 
             theSelect = (tElement.get(0).nodeName.toLowerCase() === 'select') ? tElement : tElement.find('select');
             selectName = theSelect.attr('name') || '';
+            tabindex = theSelect.attr('tabindex') || 0;
 
-            template = '<div class="cb-select" tabindex="0">' +
+            template = '<div class="cb-select" tabindex="'+tabindex+'">' +
                 '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
                 '<div class="cb-select-options" ng-show="select.show">' +
                 '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
