@@ -16,19 +16,22 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
         scope: true,
         require: '?ngModel',
         compile: function (tElement, tAttrs) {
-            var template, options = [], startingIndex = 0;
+            var template, options = [], startingIndex = 0, theSelect, selectName;
+
+            theSelect = (tElement.get(0).nodeName.toLowerCase() === 'select') ? tElement : tElement.find('select');
+            selectName = theSelect.attr('name');
 
             template = '<div class="cb-select" tabindex="0">' +
                 '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
                 '<div class="cb-select-options" ng-show="select.show">' +
                 '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
                 '</div>' +
-                '<select ng-hide="true">' +
+                '<select ng-hide="true" name="'+selectName+'">' +
                 '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' +
                 '</select>' +
                 '</div>';
 
-            angular.forEach(tElement.find('option'), function (opt, index) {
+            angular.forEach(theSelect.find('option'), function (opt, index) {
                 opt = angular.element(opt);
 
                 options.push({
@@ -42,7 +45,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
             });
 
             // Replace select manually, after all options are processed
-            tElement.replaceWith(angular.element(template));
+            theSelect.replaceWith(angular.element(template));
 
             return {
                 post: function (scope, element, attrs, ngModel) {
