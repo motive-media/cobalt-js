@@ -8,7 +8,7 @@ describe('cbSelect', function() {
     beforeEach(inject(function(_$compile_, $rootScope){
         $compile = _$compile_;
         $scope = $rootScope.$new();
-        element = $compile('<div></div>')($rootScope);
+        element = $compile('<div></div>')($scope);
 
         $scope.objects = [
             {'label': 'One', 'value': 1},

@@ -50,7 +50,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
 
             return {
                 post: function (scope, element, attrs, ngModel) {
-                    var select, selectedIndex = 0;
+                    var select, selectedIndex = startingIndex;
 
                     select = scope.select = {
                         show: false,
