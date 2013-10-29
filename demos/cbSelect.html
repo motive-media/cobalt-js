@@ -15,6 +15,7 @@
         body {
             font-family: Helvetica;
             font-size: 12px;
+            min-height: 2000px;
         }
 
         input {
@@ -28,7 +29,7 @@
             box-sizing: border-box;
         }
 
-        article {
+        .center {
             display: table;
             position: relative;
             margin: 0 auto;
@@ -62,6 +63,8 @@
             box-sizing: border-box;
             max-height: 160px;
             overflow: auto;
+            z-index: 100;
+            background-color: #fff;
         }
 
         .cb-select-option {
@@ -81,10 +84,11 @@
     <article ng-init="theOptions = [{value: 'id', label: 'Idaho'},{value: 'ca', label: 'California'}];">
         <h2>cbSelect</h2>
         <div cb-select="{placeholder: 'State'}" options="theOptions" ng-model="state"></div>
+        <div>{{ state }}</div>
     </article>
 
 
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script>
     <script src="../angularjs/directives/cbSelect.js"></script>
     <script>

@@ -28,6 +28,14 @@ module.exports = function (grunt) {
             }
         },
 
+        karma: {
+            unit: {
+                configFile: './test/unit.conf.js',
+                autoWatch: false,
+                singleRun: true
+            }
+        },
+
         // Run through ngmin to prevent bad dependency injection
         ngmin: {
             all: {
@@ -116,4 +124,5 @@ module.exports = function (grunt) {
         'concat:build',
         'clean'
     ]);
+    grunt.registerTask('test',['karma:unit']);
 };

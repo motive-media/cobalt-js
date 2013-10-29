@@ -9,6 +9,7 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
     return {
         restrict: 'A',
         scope: {
+            'ngModel': '=',
             'options': '='
         },
         template: '<div class="cb-select" tabindex="0">' +
@@ -21,9 +22,8 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
             '</select>' +
             '</div>',
         replace: true,
-        require: '?ngModel',
-        link: function (scope, element, attrs, ngModel) {
-            var options, _options, select, selectedIndex = 0;
+        link: function (scope, element, attrs) {
+            var options, _options, select, selectedIndex = -1;
 
             _options = {
                 placeholder: 'Select a value',
@@ -43,16 +43,12 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
                 show: false,
                 focused: false,
                 options: options,
-                selectedItem: options[0],
+                selectedItem: null,
                 selectOption: function (option) {
                     selectedIndex = jQuery.inArray(option, options);
 
                     select.selectedItem = option;
                     select.close();
-
-                    if (ngModel) {
-                        ngModel.$setViewValue(option);
-                    }
                 },
                 toggle: function () {
                     select.show = !select.show;
@@ -98,25 +94,29 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
                 }
             };
 
-            if (ngModel) {
-                ngModel.$render = function () {
-                    scope.selectedItem = ngModel.$viewValue;
-                };
-            }
+            scope.$watch('select.selectedItem', function(newValue) {
+                if (newValue) {
+                    scope.ngModel = newValue;
+                }
+            });
 
             // Force focus for IE
-            element.on('click', function () {
-                element.trigger('focus');
+            element.on('click', function (e) {
+                if (!angular.element(e.target).hasClass('cb-select-option')) {
+                    element.trigger('focus');
+                }
             });
 
             element.on('focus', function () {
                 scope.$apply(function () {
+                    select.focused = true;
                     select.open();
                 });
             });
 
             element.on('focusout', function () {
                 scope.$apply(function () {
+                    select.focused = false;
                     select.close();
                 });
             });
