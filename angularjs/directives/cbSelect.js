@@ -36,8 +36,6 @@ angular.module('cbSelect', []).directive('cbSelect', function (){
             scope.labelKey = _options.labelKey;
             scope.placeholder = _options.placeholder;
 
-            scope.show = false;
-
             options = scope.options;
             select = scope.select = {
                 show: false,

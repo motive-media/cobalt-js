@@ -22,7 +22,7 @@
  </article>
  </example>
  */
-angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
+angular.module('cbTooltip', []).directive('cbTooltip', function ($compile, $document) {
     'use strict';
 
     return {
@@ -67,7 +67,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile) {
 
                     tooltipElem.append(tooltipArrow);
                     tooltipElem.addClass(tooltip.position);
-                    angular.element(document.body).append(tooltipElem);
+                    $document.find('body').append(tooltipElem);
 
                     show = tooltip.show = function () {
                         tooltip.$apply(function () {
