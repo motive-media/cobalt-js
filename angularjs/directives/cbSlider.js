@@ -2,13 +2,14 @@
  * Cobalt Slider
  * - Generic Slider
  *
- * <element cb-slider="options" cb-slider-data="collection"></element>
+ * <element cb-slider="options" ng-model="collection"></element>
  *
  * options [Object]
  *   option name    : type     : default    : description
  *   =====================================================================================
  *   collectionName : String   : 'pages'    : Name of paged collection attached to scope
  *   perPage        : Number   : 1          : Number of article per page
+ *   defaultPage    : Number   : 0          : Starting page/item (if it exceeds maximum page it defaults to last pge)
  *   autoPlay       : Boolean  : false      : Auto progress the slider
  *   initialDelay   : Number   : 7000       : Time in ms before auto play starts
  *   delay          : Number   : 5000       : Minimum time in ms between slides
@@ -42,7 +43,7 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
                 thePages;
 
             options = {
-                'currentPage'   : 0,
+                'defaultPage'   : 0,
                 'perPage'       : 1,
                 'collectionName': 'pages',
                 'autoPlay'      : false,
@@ -54,7 +55,8 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
             angular.extend(options, scope.$eval(attrs.cbSlider));
 
             slider = scope.slider = {
-                currentPage: options.currentPage,
+                currentPage: options.defaultPage,
+                perPage: options.perPage,
                 next: function () {
                     resetTimer();
 
@@ -91,6 +93,10 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
                     slider[options.collectionName] = null;
                 } else {
                     slider.lastPage = Math.ceil(newValue.length / options.perPage) - 1;
+
+                    if (slider.currentPage > slider.lastPage) {
+                        slider.currentPage = slider.lastPage;
+                    }
 
                     // Split collection into pages, if necessary
                     if (options.perPage === 1) {
