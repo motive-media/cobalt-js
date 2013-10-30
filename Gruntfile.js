@@ -124,5 +124,5 @@ module.exports = function (grunt) {
         'concat:build',
         'clean'
     ]);
-    grunt.registerTask('test',['karma:unit']);
+    grunt.registerTask('test',['jshint','karma:unit']);
 };
