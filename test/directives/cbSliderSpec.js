@@ -84,4 +84,21 @@ describe('cbSlider', function() {
         slider = sliderElem.scope().slider;
         expect(slider.currentPage).toBe(3);
     });
+
+    it('should detect current page and last page correctly', function() {
+        var slider;
+
+        element.html(sliderElem = $compile('<div cb-slider="{perPage: 1}" ng-model="objects"></div>')($scope));
+        $scope.$apply();
+        slider = sliderElem.scope().slider;
+        expect(slider.onPage(0)).toBe(true);
+        slider.next();
+        expect(slider.onPage(1)).toBe(true);
+
+        expect(slider.lastPage).toEqual(3);
+        $scope.$apply(function() {
+            $scope.objects = ['things','are','happening'];
+        });
+        expect(slider.lastPage).toEqual(2);
+    });
 });

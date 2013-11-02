@@ -55,8 +55,14 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
             angular.extend(options, scope.$eval(attrs.cbSlider));
 
             slider = scope.slider = {
+                // slider.lastPage is recalculated once each time the model changes
+                lastPage: null,
+                left: null,
                 currentPage: options.defaultPage,
                 perPage: options.perPage,
+                onPage: function (index) {
+                    return index === slider.currentPage;
+                },
                 next: function () {
                     resetTimer();
 
@@ -88,7 +94,7 @@ angular.module('cbSlider', []).directive('cbSlider', function ($timeout) {
             };
 
             ngModel.$render = function () {
-                var newValue = ngModel.$viewValue;
+                var newValue = ngModel.$modelValue;
                 if (!angular.isDefined(newValue)) {
                     slider[options.collectionName] = null;
                 } else {
