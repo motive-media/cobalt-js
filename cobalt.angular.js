@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.6.4 - 2013-10-18 */
+/*! cobalt-js - v0.6.5 - 2013-11-04 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -8,50 +8,46 @@
         return {
             restrict: "A",
             scope: {
+                ngModel: "=",
                 options: "="
             },
             template: '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem[labelKey] }}"><span>{{ select.selectedItem[labelKey] || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == select.selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div>",
             replace: true,
-            require: "?ngModel",
-            link: function(a, b, c, d) {
-                var e, f, g, h = 0;
-                f = {
+            link: function(a, b, c) {
+                var d, e, f, g = -1;
+                e = {
                     placeholder: "Select a value",
                     labelKey: "label",
                     valueKey: "value"
                 };
-                angular.extend(f, a.$eval(c.cbSelect));
-                a.valueKey = f.valueKey;
-                a.labelKey = f.labelKey;
-                a.placeholder = f.placeholder;
-                a.show = false;
-                e = a.options;
-                g = a.select = {
+                angular.extend(e, a.$eval(c.cbSelect));
+                a.valueKey = e.valueKey;
+                a.labelKey = e.labelKey;
+                a.placeholder = e.placeholder;
+                d = a.options;
+                f = a.select = {
                     show: false,
                     focused: false,
-                    options: e,
-                    selectedItem: e[0],
+                    options: d,
+                    selectedItem: null,
                     selectOption: function(a) {
-                        h = jQuery.inArray(a, e);
-                        g.selectedItem = a;
-                        g.close();
-                        if (d) {
-                            d.$setViewValue(a);
-                        }
+                        g = jQuery.inArray(a, d);
+                        f.selectedItem = a;
+                        f.close();
                     },
                     toggle: function() {
-                        g.show = !g.show;
+                        f.show = !f.show;
                     },
                     open: function() {
-                        g.show = true;
+                        f.show = true;
                     },
                     close: function() {
-                        g.show = false;
+                        f.show = false;
                     },
                     scrollIntoView: function() {
                         var a, c;
                         a = b.find(".cb-select-options");
-                        c = b.find(".cb-select-option").eq(h);
+                        c = b.find(".cb-select-option").eq(g);
                         if (c.position().top + c.outerHeight() > a.height()) {
                             a.scrollTop(a.scrollTop() + c.outerHeight() + c.position().top - a.height());
                         } else if (c.position().top < 0) {
@@ -59,43 +55,47 @@
                         }
                     },
                     nextOption: function() {
-                        if (h < e.length - 1) {
-                            g.selectedItem = e[++h];
-                            g.scrollIntoView();
+                        if (g < d.length - 1) {
+                            f.selectedItem = d[++g];
+                            f.scrollIntoView();
                         }
                     },
                     prevOption: function() {
-                        if (h > 0) {
-                            g.selectedItem = e[--h];
-                            g.scrollIntoView();
+                        if (g > 0) {
+                            f.selectedItem = d[--g];
+                            f.scrollIntoView();
                         }
                     },
                     keypress: function(a) {
                         if (a.keyCode === 40) {
-                            g.nextOption();
+                            f.nextOption();
                         } else if (a.keyCode === 38) {
-                            g.prevOption();
+                            f.prevOption();
                         } else if (a.keyCode === 13) {
-                            g.toggle();
+                            f.toggle();
                         }
                     }
                 };
-                if (d) {
-                    d.$render = function() {
-                        a.selectedItem = d.$viewValue;
-                    };
-                }
-                b.on("click", function() {
-                    b.trigger("focus");
+                a.$watch("select.selectedItem", function(b) {
+                    if (b) {
+                        a.ngModel = b;
+                    }
+                });
+                b.on("click", function(a) {
+                    if (!angular.element(a.target).hasClass("cb-select-option")) {
+                        b.trigger("focus");
+                    }
                 });
                 b.on("focus", function() {
                     a.$apply(function() {
-                        g.open();
+                        f.focused = true;
+                        f.open();
                     });
                 });
                 b.on("focusout", function() {
                     a.$apply(function() {
-                        g.close();
+                        f.focused = false;
+                        f.close();
                     });
                 });
                 b.on("keydown", function(b) {
@@ -103,7 +103,7 @@
                         b.preventDefault();
                     }
                     a.$apply(function() {
-                        g.keypress(b);
+                        f.keypress(b);
                     });
                 });
             }
@@ -134,7 +134,7 @@
                 f.replaceWith(angular.element(c));
                 return {
                     post: function(a, b, c, f) {
-                        var g, h = 0;
+                        var g, h = e;
                         g = a.select = {
                             show: false,
                             focused: false,
@@ -231,7 +231,7 @@
             link: function(b, c, d, e) {
                 var f, g, h, i = null, j, k;
                 g = {
-                    currentPage: 0,
+                    defaultPage: 0,
                     perPage: 1,
                     collectionName: "pages",
                     autoPlay: false,
@@ -241,7 +241,13 @@
                 };
                 angular.extend(g, b.$eval(d.cbSlider));
                 j = b.slider = {
-                    currentPage: g.currentPage,
+                    lastPage: null,
+                    left: null,
+                    currentPage: g.defaultPage,
+                    perPage: g.perPage,
+                    onPage: function(a) {
+                        return a === j.currentPage;
+                    },
                     next: function() {
                         h();
                         if (j.currentPage < j.lastPage) {
@@ -269,11 +275,14 @@
                     }
                 };
                 e.$render = function() {
-                    var a = e.$viewValue;
+                    var a = e.$modelValue;
                     if (!angular.isDefined(a)) {
                         j[g.collectionName] = null;
                     } else {
                         j.lastPage = Math.ceil(a.length / g.perPage) - 1;
+                        if (j.currentPage > j.lastPage) {
+                            j.currentPage = j.lastPage;
+                        }
                         if (g.perPage === 1) {
                             k = a;
                         } else {
@@ -303,7 +312,7 @@
             }
         };
     } ]);
-    angular.module("cbTooltip", []).directive("cbTooltip", [ "$compile", function(a) {
+    angular.module("cbTooltip", []).directive("cbTooltip", [ "$compile", "$document", function(a, b) {
         "use strict";
         return {
             restrict: "A",
@@ -311,84 +320,84 @@
                 title: "@title",
                 content: "@content"
             },
-            compile: function(b, c) {
+            compile: function(c, d) {
                 return {
-                    post: function(b, c, d) {
-                        var e, f, g, h, i, j, k, l, m;
-                        e = {
+                    post: function(c, d, e) {
+                        var f, g, h, i, j, k, l, m, n;
+                        f = {
                             tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' + '<header ng-if="title">{{title}}</header>' + "<section>{{content}}</section>" + "</div>",
                             tplArrow: '<div class="arrow" ng-style="arrowStyle"></div>',
                             position: "top",
                             space: 8,
                             content: ":)"
                         };
-                        f = b;
-                        angular.extend(e, b.$eval(d.cbTooltip));
-                        f.position = e.position;
-                        f.space = e.space;
-                        f.tpl = e.tpl;
-                        f.show = false;
-                        f.tplArrow = e.tplArrow;
-                        j = angular.element(f.tpl);
-                        k = angular.element(f.tplArrow);
-                        l = a(j)(b);
-                        m = a(k)(b);
-                        c.addClass("cb-tooltip-active");
-                        l.append(m);
-                        l.addClass(f.position);
-                        angular.element(document.body).append(l);
-                        g = f.show = function() {
-                            f.$apply(function() {
-                                f.show = true;
+                        g = c;
+                        angular.extend(f, c.$eval(e.cbTooltip));
+                        g.position = f.position;
+                        g.space = f.space;
+                        g.tpl = f.tpl;
+                        g.show = false;
+                        g.tplArrow = f.tplArrow;
+                        k = angular.element(g.tpl);
+                        l = angular.element(g.tplArrow);
+                        m = a(k)(c);
+                        n = a(l)(c);
+                        d.addClass("cb-tooltip-active");
+                        m.append(n);
+                        m.addClass(g.position);
+                        b.find("body").append(m);
+                        h = g.show = function() {
+                            g.$apply(function() {
+                                g.show = true;
                             });
-                            i();
+                            j();
                         };
-                        h = f.hide = function() {
-                            f.$apply(function() {
-                                f.show = false;
+                        i = g.hide = function() {
+                            g.$apply(function() {
+                                g.show = false;
                             });
                         };
-                        i = function() {
-                            var a = c.offset(), b = c.outerWidth(true), d = c.outerHeight(true), e = l.outerWidth(true), g = l.outerHeight(true), h = m.outerWidth(true), i = m.outerHeight(true), j = 0, k = 0, n = {};
-                            if ("top" === f.position) {
-                                j = a.top - g - f.space;
-                                n.left = e / 2 - h / 2;
-                            } else if ("bottom" === f.position) {
-                                j = a.top + d + f.space;
-                                n.left = e / 2 - h / 2;
-                            } else if ("left" === f.position) {
-                                k = a.left - e - f.space;
-                                n.top = g / 2 - i / 2;
-                            } else if ("right" === f.position) {
-                                k = a.left + b + f.space;
-                                n.top = g / 2 - i / 2;
+                        j = function() {
+                            var a = d.offset(), b = d.outerWidth(true), c = d.outerHeight(true), e = m.outerWidth(true), f = m.outerHeight(true), h = n.outerWidth(true), i = n.outerHeight(true), j = 0, k = 0, l = {};
+                            if ("top" === g.position) {
+                                j = a.top - f - g.space;
+                                l.left = e / 2 - h / 2;
+                            } else if ("bottom" === g.position) {
+                                j = a.top + c + g.space;
+                                l.left = e / 2 - h / 2;
+                            } else if ("left" === g.position) {
+                                k = a.left - e - g.space;
+                                l.top = f / 2 - i / 2;
+                            } else if ("right" === g.position) {
+                                k = a.left + b + g.space;
+                                l.top = f / 2 - i / 2;
                             }
-                            if ("top" === f.position || "bottom" === f.position) {
+                            if ("top" === g.position || "bottom" === g.position) {
                                 if (e > b) {
                                     k = a.left - (e - b) / 2;
                                 } else {
                                     k = a.left + (b - e) / 2;
                                 }
                             }
-                            if ("left" === f.position || "right" === f.position) {
-                                if (g > d) {
-                                    j = a.top - (g - d) / 2;
+                            if ("left" === g.position || "right" === g.position) {
+                                if (f > c) {
+                                    j = a.top - (f - c) / 2;
                                 } else {
-                                    j = a.top + (d - g) / 2;
+                                    j = a.top + (c - f) / 2;
                                 }
                             }
-                            f.$apply(function() {
-                                f.style = {
+                            g.$apply(function() {
+                                g.style = {
                                     top: j,
                                     left: k
                                 };
-                                f.arrowStyle = n;
+                                g.arrowStyle = l;
                             });
                         };
-                        c.on("mouseenter", g);
-                        c.on("mouseleave", h);
-                        b.$on("$destroy", function() {
-                            l.remove();
+                        d.on("mouseenter", h);
+                        d.on("mouseleave", i);
+                        c.$on("$destroy", function() {
+                            m.remove();
                         });
                     }
                 };
