@@ -1,4 +1,4 @@
-/*! cobalt-js - v0.6.5 - 2013-11-04 */
+/*! cobalt-js - v0.6.6 - 2013-11-06 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
@@ -109,7 +109,7 @@
             }
         };
     });
-    angular.module("cbSelectReplace", []).directive("cbSelectReplace", function() {
+    angular.module("cbSelectReplace", []).directive("cbSelectReplace", [ "$compile", "$rootScope", function(a, b) {
         "use strict";
         return {
             restrict: "CA",
@@ -133,7 +133,7 @@
                 });
                 f.replaceWith(angular.element(c));
                 return {
-                    post: function(a, b, c, f) {
+                    pre: function(a, b, c, f) {
                         var g, h = e;
                         g = a.select = {
                             show: false,
@@ -221,7 +221,7 @@
                 };
             }
         };
-    });
+    } ]);
     angular.module("cbSlider", []).directive("cbSlider", [ "$timeout", function(a) {
         "use strict";
         return {
