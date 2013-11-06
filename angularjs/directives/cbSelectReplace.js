@@ -8,7 +8,7 @@
  * the DOM after initialization (see $compile service).
  */
 
-angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
+angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($compile, $rootScope){
     'use strict';
 
     return {
@@ -45,11 +45,10 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function (){
                 }
             });
 
-            // Replace select manually, after all options are processed
             theSelect.replaceWith(angular.element(template));
 
             return {
-                post: function (scope, element, attrs, ngModel) {
+                pre: function (scope, element, attrs, ngModel) {
                     var select, selectedIndex = startingIndex;
 
                     select = scope.select = {
