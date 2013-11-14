@@ -8,7 +8,7 @@
  * the DOM after initialization (see $compile service).
  */
 
-angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($compile, $rootScope){
+angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($compile, $rootScope, $filter){
     'use strict';
 
     return {
@@ -25,11 +25,11 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
             tabindex = theSelect.attr('tabindex') || 0;
 
             template = '<div class="cb-select" tabindex="'+tabindex+'">' +
-                '<div class="cb-select-value" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
+                '<div class="cb-select-value" ng-click="select.toggle()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
                 '<div class="cb-select-dropdown" ng-show="select.show">' +
                 ((dirOptions.search) ? '<div class="cb-select-search"><input type="text" ng-model="select.search"/></div>' : '') +
                 '<div class="cb-select-options">' +
-                '<div class="cb-select-option" ng-repeat="option in select.options | filter : select.search" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
+                '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
                 '</div>' +
                 '<select ng-hide="true" name="'+selectName+'">' +
                 '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' +
@@ -63,7 +63,6 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         selectOption: function (option) {
                             selectedIndex = jQuery.inArray(option, options);
 
-                            select.search = '';
                             select.selectedItem = option;
                             select.close();
 
@@ -79,6 +78,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         },
                         close: function () {
                             select.show = false;
+                            select.search = '';
                         },
                         scrollIntoView: function () {
                             var optionsElem, optionElem;
@@ -94,20 +94,22 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         },
                         nextOption: function () {
                             if (selectedIndex < select.options.length - 1) {
-                                select.selectedItem = options[++selectedIndex];
+                                select.selectedItem = select.options[++selectedIndex];
                                 select.scrollIntoView();
                             }
                         },
                         prevOption: function () {
                             if (selectedIndex > 0) {
-                                select.selectedItem = options[--selectedIndex];
+                                select.selectedItem = select.options[--selectedIndex];
                                 select.scrollIntoView();
                             }
                         },
                         keypress: function (event) {
                             if (event.keyCode === 40) {
+                                select.open();
                                 select.nextOption();
                             } else if (event.keyCode === 38) {
+                                select.open();
                                 select.prevOption();
                             } else if (event.keyCode === 13) {
                                 select.toggle();
@@ -115,13 +117,21 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         }
                     };
 
+                    scope.$watch('select.search', function (val) {
+                        select.options = $filter('filter')(options, val);
+
+                        var index = select.options.indexOf(select.selectedItem);
+
+                        selectedIndex = (index > -1)?index:0;
+                    });
+
                     if (ngModel) {
                         ngModel.$render = function () {
                             select.selectedItem = ngModel.$viewValue;
                         };
                     }
 
-                    $search = element.find('input');
+                    $search = element.find('.cb-select-search>input');
                     $options = element.find('.cb-select-option');
 
                     // Force focus for IE
@@ -129,18 +139,8 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         element.trigger('focus');
                     });
 
-                    element.on('focus', function (e) {
-                        if (!select.show && e.relatedTarget != $search.get(0)) {
-                            console.log(e);
-                            scope.$apply(function () {
-                                select.focused = true;
-                                select.open();
-                            });
-                        }
-                    });
-
                     element.on('focusout', function (e) {
-                        if (e.relatedTarget != $search.get(0)) {
+                        if ((($search.length > 0) ? e.relatedTarget !== $search.get(0) : true)) {
                             scope.$apply(function () {
                                 select.focused = false;
                                 select.close();
