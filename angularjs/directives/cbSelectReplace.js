@@ -8,7 +8,7 @@
  * the DOM after initialization (see $compile service).
  */
 
-angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($compile, $rootScope, $filter){
+angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($compile, $rootScope, $filter, $timeout){
     'use strict';
 
     return {
@@ -71,10 +71,18 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                             }
                         },
                         toggle: function () {
-                            select.show = !select.show;
+                            if (select.show) {
+                                select.close();
+                            } else {
+                                select.open();
+                            }
                         },
                         open: function () {
                             select.show = true;
+
+                            $timeout(function () {
+                                select.scrollIntoView();
+                            }, 10);
                         },
                         close: function () {
                             select.show = false;
@@ -122,7 +130,17 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
 
                         var index = select.options.indexOf(select.selectedItem);
 
-                        selectedIndex = (index > -1)?index:0;
+                        if (index > -1) {
+                            select.selectedItem = select.options[selectedIndex = index];
+
+                            if (select.show) {
+                                $timeout(function () {
+                                    select.scrollIntoView();
+                                }, 10);
+                            }
+                        } else {
+                            select.selectedItem = select.options[selectedIndex = 0];
+                        }
                     });
 
                     if (ngModel) {
