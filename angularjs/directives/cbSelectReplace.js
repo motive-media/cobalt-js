@@ -16,21 +16,25 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
         scope: true,
         require: '?ngModel',
         compile: function (tElement, tAttrs) {
-            var template, options = [], startingIndex = 0, theSelect, selectName, tabindex;
+            var template, options = [], startingIndex = 0, theSelect, selectName, tabindex, dirOptions;
 
+
+            dirOptions = $rootScope.$eval(tAttrs.cbSelectReplace) || {};
             theSelect = (tElement.get(0).nodeName.toLowerCase() === 'select') ? tElement : tElement.find('select');
             selectName = theSelect.attr('name') || '';
             tabindex = theSelect.attr('tabindex') || 0;
 
             template = '<div class="cb-select" tabindex="'+tabindex+'">' +
-                '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
-                '<div class="cb-select-options" ng-show="select.show">' +
-                '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
+                '<div class="cb-select-value" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' +
+                '<div class="cb-select-dropdown" ng-show="select.show">' +
+                ((dirOptions.search) ? '<div class="cb-select-search"><input type="text" ng-model="select.search"/></div>' : '') +
+                '<div class="cb-select-options">' +
+                '<div class="cb-select-option" ng-repeat="option in select.options | filter : select.search" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' +
                 '</div>' +
                 '<select ng-hide="true" name="'+selectName+'">' +
                 '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' +
                 '</select>' +
-                '</div>';
+                '</div></div>';
 
             angular.forEach(theSelect.find('option'), function (opt, index) {
                 opt = angular.element(opt);
@@ -49,7 +53,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
 
             return {
                 pre: function (scope, element, attrs, ngModel) {
-                    var select, selectedIndex = startingIndex;
+                    var select, selectedIndex = startingIndex, $search, $options;
 
                     select = scope.select = {
                         show: false,
@@ -59,6 +63,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         selectOption: function (option) {
                             selectedIndex = jQuery.inArray(option, options);
 
+                            select.search = '';
                             select.selectedItem = option;
                             select.close();
 
@@ -88,7 +93,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                             }
                         },
                         nextOption: function () {
-                            if (selectedIndex < options.length - 1) {
+                            if (selectedIndex < select.options.length - 1) {
                                 select.selectedItem = options[++selectedIndex];
                                 select.scrollIntoView();
                             }
@@ -116,19 +121,34 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         };
                     }
 
+                    $search = element.find('input');
+                    $options = element.find('.cb-select-option');
+
                     // Force focus for IE
-                    element.on('click', function () {
+                    element.on('click', '.cb-select-value', function (e) {
                         element.trigger('focus');
                     });
 
-                    element.on('focus', function () {
-                        scope.$apply(function () {
-                            select.focused = true;
-                            select.open();
-                        });
+                    element.on('focus', function (e) {
+                        if (!select.show && e.relatedTarget != $search.get(0)) {
+                            console.log(e);
+                            scope.$apply(function () {
+                                select.focused = true;
+                                select.open();
+                            });
+                        }
                     });
 
-                    element.on('focusout', function () {
+                    element.on('focusout', function (e) {
+                        if (e.relatedTarget != $search.get(0)) {
+                            scope.$apply(function () {
+                                select.focused = false;
+                                select.close();
+                            });
+                        }
+                    });
+
+                    $search.on('focusout', function (e) {
                         scope.$apply(function () {
                             select.focused = false;
                             select.close();
@@ -136,7 +156,7 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                     });
 
                     element.on('keydown', function (event) {
-                        if (event.keyCode !== 9) {
+                        if([38, 40].indexOf(event.keyCode) > 0) {
                             event.preventDefault();
                         }
 
