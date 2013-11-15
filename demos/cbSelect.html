@@ -53,7 +53,7 @@
             box-sizing: border-box;
         }
 
-        .cb-select-options {
+        .cb-select-dropdown {
             display: block;
             position: absolute;
             top: 35px;
@@ -61,10 +61,16 @@
             width: 100%;
             left: 0;
             box-sizing: border-box;
-            max-height: 160px;
-            overflow: auto;
             z-index: 100;
             background-color: #fff;
+        }
+
+        .cb-select-options {
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+            max-height: 160px;
+            overflow: auto;
         }
 
         .cb-select-option {
@@ -81,18 +87,22 @@
     </style>
 </head>
 <body ng-app="DemoApp">
+<div class="center">
     <article ng-init="theOptions = [{value: 'id', label: 'Idaho'},{value: 'ca', label: 'California'}];">
         <h2>cbSelect</h2>
         <div cb-select="{placeholder: 'State'}" options="theOptions" ng-model="state"></div>
-        <div>{{ state }}</div>
+
+        <h2>cbSelect/Search</h2>
+        <div cb-select="{placeholder: 'State', search: true}" options="theOptions" ng-model="state"></div>
     </article>
+</div>
 
 
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script>
-    <script src="../angularjs/directives/cbSelect.js"></script>
-    <script>
-        angular.module('DemoApp', ['cbSelect']);
-    </script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.2/angular.min.js"></script>
+<script src="../angularjs/directives/cbSelect.js"></script>
+<script>
+    angular.module('DemoApp', ['cbSelect']);
+</script>
 </body>
 </html>

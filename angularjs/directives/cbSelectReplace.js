@@ -65,10 +65,6 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
 
                             select.selectedItem = option;
                             select.close();
-
-                            if (ngModel) {
-                                ngModel.$setViewValue(option);
-                            }
                         },
                         toggle: function () {
                             if (select.show) {
@@ -153,6 +149,10 @@ angular.module('cbSelectReplace', []).directive('cbSelectReplace', function ($co
                         ngModel.$render = function () {
                             select.selectedItem = ngModel.$viewValue;
                         };
+
+                        scope.$watch('select.selectedItem', function (val) {
+                            ngModel.$setViewValue(val);
+                        });
                     }
 
                     $search = element.find('.cb-select-search>input');
