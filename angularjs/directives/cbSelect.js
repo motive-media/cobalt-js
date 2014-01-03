@@ -96,7 +96,7 @@ angular.module('cbSelect', []).directive('cbSelect', function ($compile, $filter
                         select.prevOption();
                     } else if (event.keyCode === 13) {
                         select.toggle();
-                    } else if (_options.search && /^[a-z0-9]+$/i.test(String.fromCharCode(event.keyCode)) && event.target != $search.get(0)) {
+                    } else if (_options.search && /^[a-z0-9]+$/i.test(String.fromCharCode(event.keyCode)) && event.target !== $search.get(0)) {
                         select.open();
                         $timeout(function(){
                             $search.focus();

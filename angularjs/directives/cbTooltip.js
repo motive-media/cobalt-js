@@ -22,14 +22,13 @@
  </article>
  </example>
  */
-angular.module('cbTooltip', []).directive('cbTooltip', function ($compile, $document) {
+angular.module('cbTooltip', []).directive('cbTooltip', function ($compile, $document, $sce) {
     'use strict';
 
     return {
         restrict: 'A',
         scope: {
-            'title': '@title',
-            'content': '@content'
+            'title': '@title'
         },
         compile: function (tElement, tAttrs) {
             return {
@@ -39,7 +38,7 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile, $docu
                     options = {
                         tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' +
                             '<header ng-if="title">{{title}}</header>' +
-                            '<section>{{content}}</section>' +
+                            '<section ng-bind-html="content"></section>' +
                             '</div>',
                         tplArrow: '<div class="arrow" ng-style="arrowStyle"></div>',
                         position: 'top',
@@ -56,6 +55,8 @@ angular.module('cbTooltip', []).directive('cbTooltip', function ($compile, $docu
                     tooltip.tpl = options.tpl;
                     tooltip.show = false;
                     tooltip.tplArrow = options.tplArrow;
+
+                    tooltip.content = $sce.trustAsHtml(attrs.content);
 
                     el = angular.element(tooltip.tpl);
                     elArrow = angular.element(tooltip.tplArrow);

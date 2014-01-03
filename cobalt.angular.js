@@ -1,9 +1,9 @@
-/*! cobalt-js - v0.6.6 - 2013-11-06 */
+/*! cobalt-js - v0.7.1 - 2014-01-03 */
 (function() {
     "use strict";
     angular.module("cb.directives", [ "cbSlider", "cbTooltip", "cbSelect", "cbSelectReplace" ]);
     angular.module("cb.utilities", [ "cb.directives" ]);
-    angular.module("cbSelect", []).directive("cbSelect", function() {
+    angular.module("cbSelect", []).directive("cbSelect", [ "$compile", "$filter", "$timeout", function(a, b, c) {
         "use strict";
         return {
             restrict: "A",
@@ -11,156 +11,192 @@
                 ngModel: "=",
                 options: "="
             },
-            template: '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem[labelKey] }}"><span>{{ select.selectedItem[labelKey] || placeholder }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == select.selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div>",
+            template: '<div class="cb-select" tabindex="0">' + '<div class="cb-select-value" ng-click="select.toggle()" ng-class="{active: select.show}" title="{{ select.selectedItem[labelKey] }}"><span>{{ select.selectedItem[labelKey] || placeholder }}</span><i></i></div>' + '<div class="cb-select-dropdown" ng-show="select.show">' + '<div class="cb-select-options">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-click="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option[labelKey] }}</div>' + "</div>" + '<select ng-hide="true">' + '<option ng-repeat="o in select.options" value="{{ o[valueKey] }}" ng-selected="o[valueKey] == select.selectedItem[valueKey]">{{ o[labelKey] }}</option>' + "</select>" + "</div></div>",
             replace: true,
-            link: function(a, b, c) {
-                var d, e, f, g = -1;
-                e = {
+            link: function(d, e, f) {
+                var g, h, i, j = -1, k, l;
+                h = {
                     placeholder: "Select a value",
                     labelKey: "label",
-                    valueKey: "value"
+                    valueKey: "value",
+                    search: false
                 };
-                angular.extend(e, a.$eval(c.cbSelect));
-                a.valueKey = e.valueKey;
-                a.labelKey = e.labelKey;
-                a.placeholder = e.placeholder;
-                d = a.options;
-                f = a.select = {
+                angular.extend(h, d.$eval(f.cbSelect));
+                d.valueKey = h.valueKey;
+                d.labelKey = h.labelKey;
+                d.placeholder = h.placeholder;
+                if (h.search) {
+                    e.find(".cb-select-dropdown").prepend(a('<div class="cb-select-search"><input type="text" ng-model="select.search"/></div>')(d));
+                }
+                g = d.options;
+                i = d.select = {
                     show: false,
                     focused: false,
-                    options: d,
+                    options: g,
                     selectedItem: null,
                     selectOption: function(a) {
-                        g = jQuery.inArray(a, d);
-                        f.selectedItem = a;
-                        f.close();
+                        j = jQuery.inArray(a, g);
+                        i.selectedItem = a;
+                        i.close();
                     },
                     toggle: function() {
-                        f.show = !f.show;
+                        i.show = !i.show;
                     },
                     open: function() {
-                        f.show = true;
+                        i.show = true;
                     },
                     close: function() {
-                        f.show = false;
+                        i.show = false;
                     },
                     scrollIntoView: function() {
-                        var a, c;
-                        a = b.find(".cb-select-options");
-                        c = b.find(".cb-select-option").eq(g);
-                        if (c.position().top + c.outerHeight() > a.height()) {
-                            a.scrollTop(a.scrollTop() + c.outerHeight() + c.position().top - a.height());
-                        } else if (c.position().top < 0) {
-                            a.scrollTop(a.scrollTop() + c.position().top);
+                        var a, b;
+                        a = e.find(".cb-select-options");
+                        b = e.find(".cb-select-option").eq(j);
+                        if (b.position().top + b.outerHeight() > a.height()) {
+                            a.scrollTop(a.scrollTop() + b.outerHeight() + b.position().top - a.height());
+                        } else if (b.position().top < 0) {
+                            a.scrollTop(a.scrollTop() + b.position().top);
                         }
                     },
                     nextOption: function() {
-                        if (g < d.length - 1) {
-                            f.selectedItem = d[++g];
-                            f.scrollIntoView();
+                        if (j < g.length - 1) {
+                            i.selectedItem = i.options[++j];
+                            i.scrollIntoView();
                         }
                     },
                     prevOption: function() {
-                        if (g > 0) {
-                            f.selectedItem = d[--g];
-                            f.scrollIntoView();
+                        if (j > 0) {
+                            i.selectedItem = i.options[--j];
+                            i.scrollIntoView();
                         }
                     },
                     keypress: function(a) {
                         if (a.keyCode === 40) {
-                            f.nextOption();
+                            i.nextOption();
                         } else if (a.keyCode === 38) {
-                            f.prevOption();
+                            i.prevOption();
                         } else if (a.keyCode === 13) {
-                            f.toggle();
+                            i.toggle();
+                        } else if (h.search && /^[a-z0-9]+$/i.test(String.fromCharCode(a.keyCode)) && a.target !== k.get(0)) {
+                            i.open();
+                            c(function() {
+                                k.focus();
+                                i.search = String.fromCharCode(a.keyCode).toLowerCase();
+                            }, 15);
                         }
                     }
                 };
-                a.$watch("select.selectedItem", function(b) {
-                    if (b) {
-                        a.ngModel = b;
+                d.$watch("select.search", function(a) {
+                    if (!a) {
+                        i.selectedItem = null;
+                        return;
+                    }
+                    i.options = b("filter")(g, a);
+                    var d = i.options.indexOf(i.selectedItem);
+                    if (d > -1) {
+                        i.selectedItem = i.options[j = d];
+                        if (i.show) {
+                            c(function() {
+                                i.scrollIntoView();
+                            }, 10);
+                        }
+                    } else {
+                        i.selectedItem = i.options[j = 0];
                     }
                 });
-                b.on("click", function(a) {
-                    if (!angular.element(a.target).hasClass("cb-select-option")) {
-                        b.trigger("focus");
+                d.$watch("select.selectedItem", function(a) {
+                    if (a) {
+                        d.ngModel = a;
                     }
                 });
-                b.on("focus", function() {
-                    a.$apply(function() {
-                        f.focused = true;
-                        f.open();
+                k = e.find(".cb-select-search>input");
+                l = e.find(".cb-select-option");
+                e.on("click", ".cb-select-value", function(a) {
+                    e.trigger("focus");
+                });
+                e.on("focusout", function(a) {
+                    if (k.length > 0 ? a.relatedTarget !== k.get(0) : true) {
+                        d.$apply(function() {
+                            i.focused = false;
+                            i.close();
+                        });
+                    }
+                });
+                k.on("focusout", function(a) {
+                    d.$apply(function() {
+                        i.focused = false;
+                        i.close();
                     });
                 });
-                b.on("focusout", function() {
-                    a.$apply(function() {
-                        f.focused = false;
-                        f.close();
-                    });
-                });
-                b.on("keydown", function(b) {
-                    if (b.keyCode !== 9) {
-                        b.preventDefault();
+                e.on("keydown", function(a) {
+                    if ([ 38, 40 ].indexOf(a.keyCode) > 0) {
+                        a.preventDefault();
                     }
-                    a.$apply(function() {
-                        f.keypress(b);
+                    d.$apply(function() {
+                        i.keypress(a);
                     });
                 });
             }
         };
-    });
-    angular.module("cbSelectReplace", []).directive("cbSelectReplace", [ "$compile", "$rootScope", function(a, b) {
+    } ]);
+    angular.module("cbSelectReplace", []).directive("cbSelectReplace", [ "$compile", "$rootScope", "$filter", "$timeout", function(a, b, c, d) {
         "use strict";
         return {
             restrict: "CA",
             scope: true,
             require: "?ngModel",
-            compile: function(a, b) {
-                var c, d = [], e = 0, f, g, h;
-                f = a.get(0).nodeName.toLowerCase() === "select" ? a : a.find("select");
-                g = f.attr("name") || "";
-                h = f.attr("tabindex") || 0;
-                c = '<div class="cb-select" tabindex="' + h + '">' + '<div class="cb-select-value" ng-click="select.open()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-options" ng-show="select.show">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true" name="' + g + '">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div>";
-                angular.forEach(f.find("option"), function(a, b) {
+            compile: function(a, e) {
+                var f, g = [], h = 0, i, j, k, l;
+                l = b.$eval(e.cbSelectReplace) || {};
+                i = a.get(0).nodeName.toLowerCase() === "select" ? a : a.find("select");
+                j = i.attr("name") || "";
+                k = i.attr("tabindex") || 0;
+                f = '<div class="cb-select" tabindex="' + k + '">' + '<div class="cb-select-value" ng-click="select.toggle()" ng-class="{active: select.show}" title="{{ select.selectedItem.label }}"><span>{{ select.selectedItem.label }}</span><i></i></div>' + '<div class="cb-select-dropdown" ng-show="select.show">' + (l.search ? '<div class="cb-select-search"><input type="text" ng-model="select.search"/></div>' : "") + '<div class="cb-select-options">' + '<div class="cb-select-option" ng-repeat="option in select.options" ng-mousedown="select.selectOption(option)" ng-class="{active: option == select.selectedItem}">{{ option.label }}</div>' + "</div>" + '<select ng-hide="true" name="' + j + '">' + '<option ng-repeat="o in select.options" value="{{ o.value }}" ng-selected="o.value == select.selectedItem.value">{{ o.label }}</option>' + "</select>" + "</div></div>";
+                angular.forEach(i.find("option"), function(a, b) {
                     a = angular.element(a);
-                    d.push({
+                    g.push({
                         label: a.text(),
                         value: a.val()
                     });
                     if (a.attr("selected") === "selected") {
-                        e = b;
+                        h = b;
                     }
                 });
-                f.replaceWith(angular.element(c));
+                i.replaceWith(angular.element(f));
                 return {
-                    pre: function(a, b, c, f) {
-                        var g, h = e;
-                        g = a.select = {
+                    pre: function(a, b, e, f) {
+                        var i, j = h, k, m;
+                        i = a.select = {
                             show: false,
                             focused: false,
-                            options: d,
-                            selectedItem: d[e],
+                            options: g,
+                            selectedItem: g[h],
                             selectOption: function(a) {
-                                h = jQuery.inArray(a, d);
-                                g.selectedItem = a;
-                                g.close();
-                                if (f) {
-                                    f.$setViewValue(a);
-                                }
+                                j = jQuery.inArray(a, g);
+                                i.selectedItem = a;
+                                i.close();
                             },
                             toggle: function() {
-                                g.show = !g.show;
+                                if (i.show) {
+                                    i.close();
+                                } else {
+                                    i.open();
+                                }
                             },
                             open: function() {
-                                g.show = true;
+                                i.show = true;
+                                d(function() {
+                                    i.scrollIntoView();
+                                }, 15);
                             },
                             close: function() {
-                                g.show = false;
+                                i.show = false;
+                                i.search = "";
                             },
                             scrollIntoView: function() {
                                 var a, c;
                                 a = b.find(".cb-select-options");
-                                c = b.find(".cb-select-option").eq(h);
+                                c = b.find(".cb-select-option").eq(j);
                                 if (c.position().top + c.outerHeight() > a.height()) {
                                     a.scrollTop(a.scrollTop() + c.outerHeight() + c.position().top - a.height());
                                 } else if (c.position().top < 0) {
@@ -168,53 +204,82 @@
                                 }
                             },
                             nextOption: function() {
-                                if (h < d.length - 1) {
-                                    g.selectedItem = d[++h];
-                                    g.scrollIntoView();
+                                if (j < i.options.length - 1) {
+                                    i.selectedItem = i.options[++j];
+                                    i.scrollIntoView();
                                 }
                             },
                             prevOption: function() {
-                                if (h > 0) {
-                                    g.selectedItem = d[--h];
-                                    g.scrollIntoView();
+                                if (j > 0) {
+                                    i.selectedItem = i.options[--j];
+                                    i.scrollIntoView();
                                 }
                             },
                             keypress: function(a) {
                                 if (a.keyCode === 40) {
-                                    g.nextOption();
+                                    i.open();
+                                    i.nextOption();
                                 } else if (a.keyCode === 38) {
-                                    g.prevOption();
+                                    i.open();
+                                    i.prevOption();
                                 } else if (a.keyCode === 13) {
-                                    g.toggle();
+                                    i.toggle();
+                                } else if (l.search && /^[a-z0-9]+$/i.test(String.fromCharCode(a.keyCode)) && a.target !== k.get(0)) {
+                                    i.open();
+                                    d(function() {
+                                        k.focus();
+                                        i.search = String.fromCharCode(a.keyCode).toLowerCase();
+                                    }, 15);
                                 }
                             }
                         };
+                        a.$watch("select.search", function(a) {
+                            i.options = c("filter")(g, a);
+                            var b = i.options.indexOf(i.selectedItem);
+                            if (b > -1) {
+                                i.selectedItem = i.options[j = b];
+                                if (i.show) {
+                                    d(function() {
+                                        i.scrollIntoView();
+                                    }, 10);
+                                }
+                            } else {
+                                i.selectedItem = i.options[j = 0];
+                            }
+                        });
                         if (f) {
                             f.$render = function() {
-                                g.selectedItem = f.$viewValue;
+                                i.selectedItem = f.$viewValue;
                             };
+                            a.$watch("select.selectedItem", function(a) {
+                                f.$setViewValue(a);
+                            });
                         }
-                        b.on("click", function() {
+                        k = b.find(".cb-select-search>input");
+                        m = b.find(".cb-select-option");
+                        b.on("click", ".cb-select-value", function(a) {
                             b.trigger("focus");
                         });
-                        b.on("focus", function() {
-                            a.$apply(function() {
-                                g.focused = true;
-                                g.open();
-                            });
+                        b.on("focusout", function(b) {
+                            if (k.length > 0 ? b.relatedTarget !== k.get(0) : true) {
+                                a.$apply(function() {
+                                    i.focused = false;
+                                    i.close();
+                                });
+                            }
                         });
-                        b.on("focusout", function() {
+                        k.on("focusout", function(b) {
                             a.$apply(function() {
-                                g.focused = false;
-                                g.close();
+                                i.focused = false;
+                                i.close();
                             });
                         });
                         b.on("keydown", function(b) {
-                            if (b.keyCode !== 9) {
+                            if ([ 38, 40 ].indexOf(b.keyCode) > 0) {
                                 b.preventDefault();
                             }
                             a.$apply(function() {
-                                g.keypress(b);
+                                i.keypress(b);
                             });
                         });
                     }
@@ -312,92 +377,92 @@
             }
         };
     } ]);
-    angular.module("cbTooltip", []).directive("cbTooltip", [ "$compile", "$document", function(a, b) {
+    angular.module("cbTooltip", []).directive("cbTooltip", [ "$compile", "$document", "$sce", function(a, b, c) {
         "use strict";
         return {
             restrict: "A",
             scope: {
-                title: "@title",
-                content: "@content"
+                title: "@title"
             },
-            compile: function(c, d) {
+            compile: function(d, e) {
                 return {
-                    post: function(c, d, e) {
-                        var f, g, h, i, j, k, l, m, n;
-                        f = {
-                            tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' + '<header ng-if="title">{{title}}</header>' + "<section>{{content}}</section>" + "</div>",
+                    post: function(d, e, f) {
+                        var g, h, i, j, k, l, m, n, o;
+                        g = {
+                            tpl: '<div class="cb-tooltip" ng-style="style" ng-show="show">' + '<header ng-if="title">{{title}}</header>' + '<section ng-bind-html="content"></section>' + "</div>",
                             tplArrow: '<div class="arrow" ng-style="arrowStyle"></div>',
                             position: "top",
                             space: 8,
                             content: ":)"
                         };
-                        g = c;
-                        angular.extend(f, c.$eval(e.cbTooltip));
-                        g.position = f.position;
-                        g.space = f.space;
-                        g.tpl = f.tpl;
-                        g.show = false;
-                        g.tplArrow = f.tplArrow;
-                        k = angular.element(g.tpl);
-                        l = angular.element(g.tplArrow);
-                        m = a(k)(c);
-                        n = a(l)(c);
-                        d.addClass("cb-tooltip-active");
-                        m.append(n);
-                        m.addClass(g.position);
-                        b.find("body").append(m);
-                        h = g.show = function() {
-                            g.$apply(function() {
-                                g.show = true;
+                        h = d;
+                        angular.extend(g, d.$eval(f.cbTooltip));
+                        h.position = g.position;
+                        h.space = g.space;
+                        h.tpl = g.tpl;
+                        h.show = false;
+                        h.tplArrow = g.tplArrow;
+                        h.content = c.trustAsHtml(f.content);
+                        l = angular.element(h.tpl);
+                        m = angular.element(h.tplArrow);
+                        n = a(l)(d);
+                        o = a(m)(d);
+                        e.addClass("cb-tooltip-active");
+                        n.append(o);
+                        n.addClass(h.position);
+                        b.find("body").append(n);
+                        i = h.show = function() {
+                            h.$apply(function() {
+                                h.show = true;
                             });
-                            j();
+                            k();
                         };
-                        i = g.hide = function() {
-                            g.$apply(function() {
-                                g.show = false;
+                        j = h.hide = function() {
+                            h.$apply(function() {
+                                h.show = false;
                             });
                         };
-                        j = function() {
-                            var a = d.offset(), b = d.outerWidth(true), c = d.outerHeight(true), e = m.outerWidth(true), f = m.outerHeight(true), h = n.outerWidth(true), i = n.outerHeight(true), j = 0, k = 0, l = {};
-                            if ("top" === g.position) {
-                                j = a.top - f - g.space;
-                                l.left = e / 2 - h / 2;
-                            } else if ("bottom" === g.position) {
-                                j = a.top + c + g.space;
-                                l.left = e / 2 - h / 2;
-                            } else if ("left" === g.position) {
-                                k = a.left - e - g.space;
+                        k = function() {
+                            var a = e.offset(), b = e.outerWidth(true), c = e.outerHeight(true), d = n.outerWidth(true), f = n.outerHeight(true), g = o.outerWidth(true), i = o.outerHeight(true), j = 0, k = 0, l = {};
+                            if ("top" === h.position) {
+                                j = a.top - f - h.space;
+                                l.left = d / 2 - g / 2;
+                            } else if ("bottom" === h.position) {
+                                j = a.top + c + h.space;
+                                l.left = d / 2 - g / 2;
+                            } else if ("left" === h.position) {
+                                k = a.left - d - h.space;
                                 l.top = f / 2 - i / 2;
-                            } else if ("right" === g.position) {
-                                k = a.left + b + g.space;
+                            } else if ("right" === h.position) {
+                                k = a.left + b + h.space;
                                 l.top = f / 2 - i / 2;
                             }
-                            if ("top" === g.position || "bottom" === g.position) {
-                                if (e > b) {
-                                    k = a.left - (e - b) / 2;
+                            if ("top" === h.position || "bottom" === h.position) {
+                                if (d > b) {
+                                    k = a.left - (d - b) / 2;
                                 } else {
-                                    k = a.left + (b - e) / 2;
+                                    k = a.left + (b - d) / 2;
                                 }
                             }
-                            if ("left" === g.position || "right" === g.position) {
+                            if ("left" === h.position || "right" === h.position) {
                                 if (f > c) {
                                     j = a.top - (f - c) / 2;
                                 } else {
                                     j = a.top + (c - f) / 2;
                                 }
                             }
-                            g.$apply(function() {
-                                g.style = {
+                            h.$apply(function() {
+                                h.style = {
                                     top: j,
                                     left: k
                                 };
-                                g.arrowStyle = l;
+                                h.arrowStyle = l;
                             });
                         };
-                        d.on("mouseenter", h);
-                        d.on("mouseleave", i);
-                        c.$on("$destroy", function() {
-                            m.remove();
+                        e.on("mouseenter", i);
+                        e.on("mouseleave", j);
+                        d.$on("$destroy", function() {
+                            n.remove();
                         });
                     }
                 };
